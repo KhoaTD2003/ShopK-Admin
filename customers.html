@@ -1,0 +1,185 @@
+<!doctype html>
+<!-- 
+* Bootstrap Simple Admin Template
+* Version: 2.1
+* Author: Alexis Luna
+* Website: https://github.com/alexis-luna/bootstrap-simple-admin-template
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Users | Bootstrap Simple Admin Template</title>
+
+    <link href="assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
+    <link href="assets/vendor/fontawesome/css/solid.min.css" rel="stylesheet">
+    <link href="assets/vendor/fontawesome/css/brands.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/datatables/datatables.min.css" rel="stylesheet">
+    <link href="assets/css/master.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- sidebar navigation component -->
+        <div id="sidebar-container"></div>
+
+
+        <!-- end of sidebar component -->
+        <div id="body" class="active">
+            <!-- navbar navigation component -->
+            <div id="navbar-container"></div>
+
+            <!-- end of navbar navigation -->
+            <div class="content">
+                <div class="container">
+                    <div class="page-title">
+                        <h3>Khách Hàng
+                            <a href="roles.html" class="btn btn-sm btn-outline-primary float-end"><i
+                                    class="fas fa-user-shield"></i> Roles</a>
+                        </h3>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-body">
+                            <table width="100%" class="table table-hover" id="dataTables-example">
+                                <thead>
+                                    <thead>
+                                        <tr>
+                                            <th>Id</th>
+                                            <th>UserName</th>
+                                            <th>Họ Tên </th>
+                                            <th>Ngày Sinh</th>
+                                            <th>Địa Chỉ </th>
+                                            <th>Email</th>
+                                            <th>Số Điện Thoại</th>
+                                            <th>Trạng Thái Tài Khoản</th>
+                                            <th>Thao Tác</th>
+                                        </tr>
+                                    </thead>
+                                </thead>
+                                <tbody id="userTableBody">
+
+                                    <!-- <tr>
+                                        <td>Jose Rodriguez</td>
+                                        <td>jose.rodz@gmail.com</td>
+                                        <td>Author</td>
+                                        <td>Staff</td>
+                                        <td>Active</td>
+                                        <td class="text-end">
+                                            <a href="" class="btn btn-outline-info btn-rounded"><i class="fas fa-pen"></i></a>
+                                            <a href="" class="btn btn-outline-danger btn-rounded"><i class="fas fa-trash"></i></a>
+                                        </td>
+                                    </tr> -->
+                                    <!-- Modal Chỉnh Sửa Tài Khoản -->
+                                    <!-- Modal Form Edit -->
+                                    <!-- Modal -->
+                                    <!-- Modal Chỉnh sửa Tài Khoản Người Dùng -->
+                                    <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog"
+                                        aria-labelledby="editUserModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editUserModalLabel">Chỉnh sửa tài khoản
+                                                        Khách Hàng</h5>
+
+                                                    <div class="form-group">
+                                                        <label for="roleToggle"></label>
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                id="roleToggle" name="role" value="nhân viên">
+                                                            <label class="custom-control-label" for="roleToggle">Bật để
+                                                                chuyển thành nhân viên</label>
+                                                        </div>
+                                                    </div>
+
+
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form id="editUserForm">
+                                                        <div class="form-group">
+                                                            <label for="hoTen" hidden>ID</label>
+                                                            <input type="text" class="form-control" id="id" name="id"
+                                                                readonly hidden>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="hoTen">UserName</label>
+                                                            <input type="text" class="form-control" id="maNguoiDung"
+                                                                name="maNguoiDung" placeholder="Nhập mã người dùng">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="hoTen">Họ tên</label>
+                                                            <input type="text" class="form-control" id="hoTen"
+                                                                name="hoTen" placeholder="Nhập họ tên">
+                                                        </div>
+
+                                                        <div class="form-group">
+                                                            <label for="namSinh">Năm sinh</label>
+                                                            <input type="text" class="form-control" id="namSinh"
+                                                                name="namSinh" placeholder="Nhập năm sinh">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="diaChi">Địa chỉ</label>
+                                                            <input type="text" class="form-control" id="diaChi"
+                                                                name="diaChi" placeholder="Nhập địa chỉ">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="email">Email</label>
+                                                            <input type="email" class="form-control" id="email"
+                                                                name="email" placeholder="Nhập email">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="sdt">Số điện thoại</label>
+                                                            <input type="text" class="form-control" id="sdt" name="sdt"
+                                                                placeholder="Nhập số điện thoại">
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                        id="closeButton">Đóng</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="saveChangesButton">Lưu thay đổi</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                           
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/datatables/datatables.min.js"></script>
+    <script src="assets/js/initiate-datatables.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/accounts/users.js"></script>
+    <script>
+        // Hàm kiểm tra trạng thái đăng nhập và chuyển hướng nếu chưa đăng nhập
+        function checkLogin() {
+            const user = localStorage.getItem('user');  // Lấy thông tin người dùng từ localStorage
+
+            if (!user) {
+                // Nếu không có thông tin người dùng, chuyển hướng về trang login
+                window.location.href = "/login.html";
+            }
+        }
+
+        // Kiểm tra khi trang users.html được tải
+        $(document).ready(function () {
+            checkLogin(); // Kiểm tra trạng thái đăng nhập ngay khi trang load
+        });
+    </script>
+</body>
+
+</html>

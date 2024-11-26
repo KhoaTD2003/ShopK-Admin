@@ -1,0 +1,546 @@
+<!doctype html>
+<!-- 
+* Bootstrap Simple Admin Template
+* Version: 2.1
+* Author: Alexis Luna
+* Website: https://github.com/alexis-luna/bootstrap-simple-admin-template
+-->
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Users | Bootstrap Simple Admin Template</title>
+    <!-- Bootstrap CSS -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Bootstrap JS và Popper.js (cho modal hoạt động) -->
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Popper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+
+    <!-- Bootstrap 4 JavaScript -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link href="assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
+    <link href="assets/vendor/fontawesome/css/solid.min.css" rel="stylesheet">
+    <link href="assets/vendor/fontawesome/css/brands.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/datatables/datatables.min.css" rel="stylesheet">
+    <link href="assets/css/master.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- sidebar navigation component -->
+        <div id="sidebar-container"></div>
+
+
+        <!-- end of sidebar component -->
+        <div id="body" class="active">
+            <!-- navbar navigation component -->
+            <div id="navbar-container"></div>
+
+            <!-- end of navbar navigation -->
+            <div class="content">
+                <div class="container">
+                    <div class="page-title">
+                        <h3> Danh Sách Sản Phẩm
+                            <!-- <a href="roles.html" class="btn btn-sm btn-outline-primary float-end"><i
+                                    class="fas fa-user-shield"></i> Roles</a> -->
+                            <button type="button" class="btn btn-sm btn-outline-primary float-end" data-toggle="modal"
+                                data-target="#addProductModal" onclick="loadProductAttributes()">
+                                Thêm Sản Phẩm
+                            </button>
+                        </h3>
+                    </div>
+                    <div class="box box-primary">
+                        <div class="box-body">
+                            <table width="100%" class="table table-hover" id="dataTables-example">
+                                <thead>
+                                    <thead>
+                                        <tr>
+                                            <!-- <th>Id</th> -->
+                                            <th>Mã </th>
+                                            <th>Tên Sản Phẩm </th>
+                                            <th>Thương hiệu </th>
+                                            <th>Màu Sắc</th>
+                                            <th>Thể Loại</th>
+                                            <th>Xuất xứ</th>
+                                            <th>Chất liệu</th>
+                                            <th>size</th>
+                                            <th>Tồn</th>
+                                            <th>Giá bán</th>
+                                            <th>Mô tả</th>
+                                            <th>Ảnh</th>
+                                            <th>Trạng Thái</th>
+                                            <th>Thao Tác</th>
+                                        </tr>
+                                    </thead>
+                                </thead>
+                                <tbody id="productsTableBody">
+                                    
+                                    <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog"
+                                        aria-labelledby="editProductModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="editProductModalLabel">Update
+                                                        Sản Phẩm</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form id="editProductForm">
+                                                        <!-- Mã sản phẩm và Tên sản phẩm hiển thị trên cùng một dòng -->
+                                                        <input type="text" class="form-control" id="productId" name="id"
+                                                            required readonly hidden>
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="productCode">Mã sản phẩm</label>
+                                                                <input type="text" class="form-control" id="productCode"
+                                                                    name="maSP" required readonly
+                                                                    placeholder="Vui Lòng nhập đầy đủ thông tin">
+                                                                <span id="maSPError" class="text-danger"></span>
+                                                                <!-- Hiển thị lỗi tại đây -->
+
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="productName">Tên sản
+                                                                    phẩm</label>
+                                                                <input type="text" class="form-control" id="productName"
+                                                                    name="tenSP" required>
+                                                                <span id="nameSPError" class="text-danger"></span>
+                                                                <!-- Hiển thị lỗi tại đây -->
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Thương hiệu và Màu sắc hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="brand">Thương hiệu</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="brand"
+                                                                        name="thuongHieu" required>
+                                                                        <option value="">Chọn thương hiệu
+                                                                        </option>
+                                                                    </select>
+                                                                    <span id="brandError"
+                                                                        class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addBrandBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="color">Màu sắc</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="color"
+                                                                        name="mauSac" required>
+                                                                        <option value="">Chọn màu sắc
+                                                                        </option>
+                                                                    </select>
+                                                                    <span id="colorError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addColorBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Chất liệu và Xuất xứ hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="material">Chất liệu</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="material"
+                                                                        name="chatLieu" required>
+                                                                        <option value="">Chọn chất liệu
+                                                                        </option>
+                                                                    </select>
+                                                                    <span id="materialError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addMaterialBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="origin">Xuất xứ</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="origin"
+                                                                        name="xuatXu" required>
+                                                                        <option value="">Chọn xuất xứ
+                                                                        </option>
+                                                                    </select>
+                                                                    <span id="originError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addOriginBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Thể loại và Size hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="category">Thể loại</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="category"
+                                                                        name="theLoai" required>
+                                                                        <option value="">Chọn thể loại
+                                                                        </option>
+                                                                    </select>
+                                                                    <span id="categoryError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addCategoryBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="size">Size</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="size" name="size"
+                                                                        required>
+                                                                        <option value="">Chọn size</option>
+                                                                    </select>
+                                                                    <span id="sizeError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addSizeBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Tồn kho và Giá bán hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="stock">Tồn kho</label>
+                                                                <input type="number" class="form-control" id="stock"
+                                                                    name="ton">
+                                                                <span id="stockError" class="text-danger"></span>
+                                                                <!-- Hiển thị lỗi tại đây -->
+
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="price">Giá bán</label>
+                                                                <input type="number" class="form-control" id="price"
+                                                                    name="giaBan" required>
+                                                                <span id="priceError" class="text-danger"></span>
+                                                                <!-- Hiển thị lỗi tại đây -->
+
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Mô tả -->
+                                                        <div class="form-group ">
+                                                            <label for="description">Mô tả</label>
+                                                            <textarea class="form-control" id="description"
+                                                                name="moTa"></textarea>
+                                                            <span id="descriptionError" class="text-danger"></span>
+                                                            <!-- Hiển thị lỗi tại đây -->
+                                                        </div>
+
+                                                        <!-- Ảnh -->
+                                                        <div class="form-group">
+                                                            <label for="image">Ảnh</label>
+                                                            <input type="file" class="form-control-file" id="image"
+                                                                name="anh">
+
+                                                            <input type="text" class="form-control mt-2" id="imagePath"
+                                                                readonly>
+
+                                                        </div>
+
+                                                        <!-- Trạng thái -->
+                                                        <div class="form-group">
+                                                            <label for="status">Trạng thái</label>
+                                                            <select class="form-control" id="status" name="trangThai">
+                                                                <option value="true">Kích hoạt</option>
+                                                                <option value="false">Tắt</option>
+                                                            </select>
+                                                        </div>
+                                                    </form>
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                        id="closeButton">Hủy</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="updateProductButton">Lưu sản phẩm</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+
+                                    <!-- Modal Add Sản Phẩm -->
+                                    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
+                                        aria-labelledby="addProductModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="addProductModalLabel">Thêm Sản Phẩm</h5>
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <form id="addProductForm">
+                                                        <!-- Mã sản phẩm và Tên sản phẩm hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="productCode">Mã sản phẩm</label>
+                                                                <input type="text" class="form-control" id="ma"
+                                                                    name="maSP" required readonly
+                                                                    placeholder="Vui Lòng nhập đầy đủ thông tin">
+                                                                <span id="maSPError" class="text-danger"></span>
+                                                                <!-- Hiển thị lỗi tại đây -->
+
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="productName">Tên sản phẩm</label>
+                                                                <input type="text" class="form-control" id="ten"
+                                                                    name="tenSP" required>
+                                                                <span id="tenSPError" class="text-danger"></span>
+                                                                <!-- Hiển thị lỗi tại đây -->
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Thương hiệu và Màu sắc hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="brand">Thương hiệu</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="thuonghieu"
+                                                                        name="thuongHieu" required>
+                                                                        <option value="">Chọn thương hiệu</option>
+                                                                    </select>
+                                                                    <span id="thuonghieuError"
+                                                                        class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addBrandBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="color">Màu sắc</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="mausac"
+                                                                        name="mauSac" required>
+                                                                        <option value="">Chọn màu sắc</option>
+                                                                    </select>
+                                                                    <span id="mausacError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addColorBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Chất liệu và Xuất xứ hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="material">Chất liệu</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="chatlieu"
+                                                                        name="chatLieu" required>
+                                                                        <option value="">Chọn chất liệu</option>
+                                                                    </select>
+                                                                    <span id="chatlieuError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addMaterialBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="origin">Xuất xứ</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="xuatxu"
+                                                                        name="xuatXu" required>
+                                                                        <option value="">Chọn xuất xứ</option>
+                                                                    </select>
+                                                                    <span id="xuatxuError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addOriginBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Thể loại và Size hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="category">Thể loại</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="theloai"
+                                                                        name="theLoai" required>
+                                                                        <option value="">Chọn thể loại</option>
+                                                                    </select>
+                                                                    <span id="theloaiError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addCategoryBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="size">Size</label>
+                                                                <div class="input-group">
+                                                                    <select class="form-control" id="kichco" name="size"
+                                                                        required>
+                                                                        <option value="">Chọn size</option>
+                                                                    </select>
+                                                                    <span id="kichcoError" class="text-danger"></span>
+                                                                    <!-- Hiển thị lỗi tại đây -->
+                                                                    <div class="input-group-append">
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" id="addSizeBtn">+</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Tồn kho và Giá bán hiển thị trên cùng một dòng -->
+                                                        <div class="form-group row">
+                                                            <div class="col-md-6">
+                                                                <label for="stock">Tồn kho</label>
+                                                                <input type="number" class="form-control" id="tonkho"
+                                                                    name="ton">
+                                                                <span id="tonkhoError" class="text-danger"></span>
+                                                                <!-- Hiển thị lỗi tại đây -->
+
+                                                            </div>
+
+                                                            <div class="col-md-6">
+                                                                <label for="price">Giá bán</label>
+                                                                <input type="number" class="form-control" id="gia"
+                                                                    name="giaBan" required>
+                                                                <span id="giaError" class="text-danger"></span>
+                                                                <!-- Hiển thị lỗi tại đây -->
+
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Mô tả -->
+                                                        <div class="form-group ">
+                                                            <label for="description">Mô tả</label>
+                                                            <textarea class="form-control" id="mota"
+                                                                name="moTa"></textarea>
+                                                            <span id="motaError" class="text-danger"></span>
+                                                            <!-- Hiển thị lỗi tại đây -->
+                                                        </div>
+
+                                                        <!-- Ảnh -->
+                                                        <div class="form-group">
+                                                            <label for="image">Ảnh</label>
+                                                            <input type="file" class="form-control-file" id="anh"
+                                                                name="anh">
+                                                        </div>
+
+                                                        <!-- Trạng thái -->
+                                                        <div class="form-group">
+                                                            <label for="status">Trạng thái</label>
+                                                            <select class="form-control" id="trangthai" name="trangThai">
+                                                                <option value="true">Kích hoạt</option>
+                                                                <option value="false">Tắt</option>
+                                                            </select>
+                                                        </div>
+                                                    </form>
+
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Hủy</button>
+                                                    <button type="button" class="btn btn-primary"
+                                                        id="saveProductButton">Lưu sản phẩm</button>
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                </tbody>
+                            </table>
+                            <nav aria-label="Page navigation">
+                                <ul id="pagination" class="pagination"></ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/datatables/datatables.min.js"></script>
+    <script src="assets/js/initiate-datatables.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/products/listproduct.js"></script>
+    <script>
+        // Hàm kiểm tra trạng thái đăng nhập và chuyển hướng nếu chưa đăng nhập
+        function checkLogin() {
+            const user = localStorage.getItem('user');  // Lấy thông tin người dùng từ localStorage
+
+            if (!user) {
+                // Nếu không có thông tin người dùng, chuyển hướng về trang login
+                window.location.href = "/login.html";
+            }
+        }
+
+        // Kiểm tra khi trang users.html được tải
+        $(document).ready(function () {
+            checkLogin(); // Kiểm tra trạng thái đăng nhập ngay khi trang load
+        });
+    </script>
+</body>
+
+</html>

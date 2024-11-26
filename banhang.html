@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Users | Bootstrap Simple Admin Template</title>
+
+    <link href="assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
+    <link href="assets/vendor/fontawesome/css/solid.min.css" rel="stylesheet">
+    <link href="assets/vendor/fontawesome/css/brands.min.css" rel="stylesheet">
+    <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/vendor/datatables/datatables.min.css" rel="stylesheet">
+    <link href="assets/css/master.css" rel="stylesheet">
+    
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            border: 1px solid #ddd;
+        }
+        .cart-table td, .cart-table th {
+            vertical-align: middle;
+        }
+        .pending-invoice .card {
+            flex: 1;
+            margin: 10px;
+            max-width: 18rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <!-- sidebar navigation component -->
+        <div id="sidebar-container"></div>
+
+
+        <!-- end of sidebar component -->
+        <div id="body" class="active">
+            <!-- navbar navigation component -->
+            <div id="navbar-container"></div>
+
+            <!-- end of navbar navigation -->
+            <div class="container mt-4">
+                <div class="row">
+                    <!-- Cột trái: Danh sách sản phẩm -->
+                    <div class="col-md-7">
+                        <h5 class="mb-3">Danh sách sản phẩm</h5>
+                        <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm" class="form-control mb-3">
+                        <div id="productList" class="row"> </div>
+                        <div id="paginationContainer" class="d-flex justify-content-center mt-4">111</div>
+
+                    </div>
+        
+                    <!-- Cột phải: Hóa đơn và giỏ hàng -->
+                    <div class="col-md-5">
+                        <h5 class="mb-3">Hóa đơn</h5>
+                        <!-- Thông tin khách hàng -->
+                        <form id="customerForm">
+                            <div class="form-group">
+                                <label for="customerName">Tên khách hàng</label>
+                                <input type="text" class="form-control" id="customerName" placeholder="Nhập tên khách hàng">
+                            </div>
+                            <div class="form-group">
+                                <label for="customerPhone">Số điện thoại</label>
+                                <input type="text" class="form-control" id="customerPhone" placeholder="Nhập số điện thoại">
+                            </div>
+                        </form>
+        
+                        <!-- Giỏ hàng -->
+                        <table class="table cart-table">
+                            <thead>
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>SL</th>
+                                    <th>Giá</th>
+                                    <th>Tổng</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartItems"></tbody>
+                        </table>
+        
+                        <!-- Tổng tiền -->
+                        <div class="mb-3">
+                            Tổng tiền: <span id="totalAmount">0</span> VND
+                        </div>
+
+                        <div class="form-group">
+                            <label for="discountSelect">Giảm giá</label>
+                            <select id="discountSelect" class="form-control">
+                                <option value="0">Không giảm giá</option>
+                                <option value="5">Giảm 5%</option>
+                                <option value="10">Giảm 10%</option>
+                                <option value="20">Giảm 20%</option>
+                            </select>
+                        </div>
+                        <div>
+                            Tổng sau giảm: <span id="finalAmount">0</span> VND
+                        </div>
+        
+                        <!-- Nút chức năng -->
+                        <button class="btn btn-primary mt-2" id="createInvoice">Tạo hóa đơn</button>
+                        <button class="btn btn-success mt-2" id="checkoutBtn">Thanh toán</button>
+                    </div>
+                </div>
+        
+                <!-- Danh sách hóa đơn chờ -->
+                <h5 class="mt-4">Hóa đơn chờ</h5>
+                <div id="pendingInvoices" class="d-flex flex-wrap"></div>
+            </div>
+        </div>
+    </div>
+    <!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> -->
+
+    <script src="assets/vendor/jquery/jquery.min.js"></script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/datatables/datatables.min.js"></script>
+    <script src="assets/js/initiate-datatables.js"></script>
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/hoadon/banhang.js"></script>
+    <script>
+        // Hàm kiểm tra trạng thái đăng nhập và chuyển hướng nếu chưa đăng nhập
+        function checkLogin() {
+            const user = localStorage.getItem('user');  // Lấy thông tin người dùng từ localStorage
+
+            if (!user) {
+                // Nếu không có thông tin người dùng, chuyển hướng về trang login
+                window.location.href = "/login.html";
+            }
+        }
+
+        // Kiểm tra khi trang users.html được tải
+        $(document).ready(function () {
+            checkLogin(); // Kiểm tra trạng thái đăng nhập ngay khi trang load
+        });
+    </script>
+</body>
+
+</html>
