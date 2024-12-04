@@ -20,7 +20,7 @@
     // Hàm tải sidebar
     function loadSidebar() {
         return new Promise((resolve) => {
-            $('#sidebar-container').load('sidebar/sidebar.html', function (response, status, xhr) {
+            $('#sidebar-container').load('/sidebar/sidebar.html', function (response, status, xhr) {
                 if (status === "error") {
                     console.error("Lỗi khi tải sidebar:", xhr.status, xhr.statusText);
                     resolve(false);
@@ -35,7 +35,7 @@
     // Hàm tải header
     function loadHeader() {
         return new Promise((resolve) => {
-            $('#navbar-container').load('sidebar/header.html', function (response, status, xhr) {
+            $('#navbar-container').load('/sidebar/header.html', function (response, status, xhr) {
                 if (status === "error") {
                     console.error("Lỗi khi tải header:", xhr.status, xhr.statusText);
                     resolve(false);

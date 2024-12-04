@@ -97,8 +97,10 @@ $(document).ready(function () {
             tienThu: finalAmount,
             tienGiam: totalAmount - finalAmount,
             // maGiamGia: discount,  // Mã giảm giá nếu có
-            ghiChu: "InStore"
+            ghiChu: "In Store"
         };
+
+        if (confirm('Bạn có chắc chắn thanh toán?')) {
 
         // Gửi yêu cầu tạo hóa đơn và thanh toán
         $.ajax({
@@ -113,8 +115,8 @@ $(document).ready(function () {
                 // Xóa giỏ hàng và làm mới giao diện
                 localStorage.removeItem('cart');
                 $('#cartItems').empty();
-                $('#totalAmount').text('0 VND');
-                $('#finalAmount').text('0 VND');
+                $('#totalAmount').text('0 ');
+                $('#finalAmount').text('0 ');
                 $('#customerForm')[0].reset(); // Đặt lại toàn bộ form
 
 
@@ -124,6 +126,7 @@ $(document).ready(function () {
                 alert('Có lỗi xảy ra khi thanh toán.');
             }
         });
+    }
     });
 });
 
@@ -145,8 +148,8 @@ function updateTotalAmount() {
     const formattedFinalAmount = finalAmount.toLocaleString('vi-VN');
 
     // Cập nhật giao diện
-    document.getElementById('totalAmount').textContent = `${formattedTotalAmount} VND`; // Tổng tiền gốc
-    document.getElementById('finalAmount').textContent = `${formattedFinalAmount} VND`; // Tổng sau giảm
+    document.getElementById('totalAmount').textContent = `${formattedTotalAmount} `; // Tổng tiền gốc
+    document.getElementById('finalAmount').textContent = `${formattedFinalAmount} `; // Tổng sau giảm
 }
 
 function loadDiscounts() {

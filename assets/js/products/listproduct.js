@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    const role = localStorage.getItem('role');  // Lấy role từ localStorage
+    // const role = localStorage.getItem('role');  // Lấy role từ localStorage
 
     // Hàm tải dữ liệu người dùng từ API
     function loadProductData(pageNumber = 0) {
@@ -8,10 +8,11 @@ $(document).ready(function () {
             type: 'GET',
             success: function (data) {
                 let tableRows = '';
-                data.content.forEach(function (product) {
+                data.content.forEach(function (product,index) {
                     tableRows += `
                     
                    <tr>
+                        <td>${index+1}</td> <!-- Mã sản phẩm -->
                         <td>${product.maSP}</td> <!-- Mã sản phẩm -->
                         <td>${product.tenSP}</td> <!-- Tên sản phẩm -->
                         <td>${product.thuongHieuTen}</td> <!-- Tên thương hiệu -->
@@ -219,127 +220,6 @@ $(document).ready(function () {
         });
 
 
-        // Khi modal "Add Product" được mở, reset form
-        // $('#addProductModal').on('show.bs.modal', function () {
-        //     $('#addProductForm')[0].reset(); // Reset tất cả trường trong form
-        //     $('span[id$="Error"]').text('');  // Reset các thông báo lỗi
-        // });
-
-        // Khi bấm nút lưu sản phẩm
-        // $('#saveProductButton').on('click', function (event) {
-        //     event.preventDefault();  // Ngừng reload trang khi submit
-        //     console.log('Save button clicked');  // Log khi nút được nhấn
-        //     // Reset các lỗi cũ
-        //     $('span[id$="Error"]').text('');
-
-        //     // Kiểm tra các trường bắt buộc
-        //     var isValid = true;
-
-        //     // Kiểm tra Mã sản phẩm
-        //     //  if ($('#productCode').val() === '') {
-        //     //      $('#maSPError').text('Mã sản phẩm không được để trống');
-        //     //      isValid = false;
-        //     //  }
-
-        //     // Kiểm tra Tên sản phẩm
-        //     if ($('#productName').val() === '') {
-        //         $('#tenSPError').text('Tên sản phẩm không được để trống');
-        //         isValid = false;
-        //     }
-
-        //     // Kiểm tra Thương hiệu
-        //     if ($('#brand').val() === '') {
-        //         $('#thuongHieuError').text('Vui lòng chọn ');
-        //         isValid = false;
-        //     }
-
-        //     // Kiểm tra Màu sắc
-        //     if ($('#color').val() === '') {
-        //         $('#colorError').text('Vui lòng chọn ');
-        //         isValid = false;
-        //     }
-
-        //     // Kiểm tra Chất liệu
-        //     if ($('#material').val() === '') {
-        //         $('#materialError').text('Vui lòng chọn ');
-        //         isValid = false;
-        //     }
-
-        //     // Kiểm tra Xuất xứ
-        //     if ($('#origin').val() === '') {
-        //         $('#originError').text('Vui lòng chọn ');
-        //         isValid = false;
-        //     }
-
-        //     // Kiểm tra Thể loại
-        //     if ($('#category').val() === '') {
-        //         $('#categoryError').text('Vui lòng chọn ');
-        //         isValid = false;
-        //     }
-
-        //     // Kiểm tra Size
-        //     if ($('#size').val() === '') {
-        //         $('#sizeError').text('Vui lòng chọn ');
-        //         isValid = false;
-        //     }
-
-        //     // Kiểm tra Tồn kho
-        //     var stockValue = $('#stock').val();
-        //     if (stockValue === '' || parseInt(stockValue) < 0) {
-        //         $('#stockError').text('Tồn kho không được để trống và phải là số không âm');
-        //         isValid = false;
-        //     }
-
-        //     // Kiểm tra Giá bán
-        //     var priceValue = $('#price').val();
-        //     if (priceValue === '' || parseFloat(priceValue) < 0) {
-        //         $('#priceError').text('Giá bán không được để trống và phải là số không âm');
-        //         isValid = false;
-        //     }
-
-
-        //     // Nếu có lỗi, không gửi dữ liệu
-        //     if (!isValid) {
-        //         return; // Dừng lại không gửi dữ liệu
-        //     }
-
-        //     // Thu thập dữ liệu từ form
-        //     var formData = new FormData($('#addProductForm')[0]);  // Chuyển form thành FormData
-        //     console.log(formData);  // Log formData để kiểm tra
-
-        //     // Gửi dữ liệu qua AJAX để thêm sản phẩm
-        //     $.ajax({
-        //         url: 'http://localhost:8080/api/products/add',  // Đường dẫn API để thêm sản phẩm
-        //         method: 'POST',
-        //         data: formData,
-        //         contentType: false,  // Không gửi content-type
-        //         processData: false,  // Không xử lý dữ liệu (để gửi file)
-        //         success: function (response) {
-        //             // Xử lý khi thêm sản phẩm thành công
-        //             console.log(response);
-        //             console.log('Đang đóng modal...');
-        //             $('#addProductModal').removeClass('show').addClass('fade');
-        //             $('body').removeClass('modal-open');
-        //             $('.modal-backdrop').remove();
-
-        //             // $('#addProductModal').modal('hide');    
-        //             alert('Sản phẩm đã được thêm thành công!');
-        //             $('#addProductForm')[0].reset(); // Làm sạch form nếu cần
-
-
-        //             // Có thể cập nhật lại bảng sản phẩm hoặc làm gì đó sau khi thêm
-        //             // Ví dụ, reload lại bảng sản phẩm nếu bạn đang hiển thị bảng sản phẩm trên cùng một trang.
-        //             loadProductData();  // Đây là một hàm bạn cần viết để reload bảng sản phẩm.
-
-        //             // Đóng form sau khi thêm
-        //         },
-        //         error: function (err) {
-        //             // Xử lý khi có lỗi
-        //             alert('Đã có lỗi xảy ra. Vui lòng thử lại!');
-        //             console.error(err);
-        //         }
-        //     });
-        // });
     });
 
     function openEditForm(productId) {
@@ -531,98 +411,99 @@ function loadProductAttributes() {
 }
 
 // Function để xử lý lưu sản phẩm
-function saveProduct() {
-    $('#saveProductButton').on('click', function (event) {
-        event.preventDefault(); // Ngừng reload trang khi submit
-        console.log('Save button clicked'); // Log khi nút được nhấn
+    function saveProduct() {
+        $('#saveProductButton').on('click', function (event) {
+            event.preventDefault(); // Ngừng reload trang khi submit
+            console.log('Save button clicked'); // Log khi nút được nhấn
 
-        // Reset các lỗi cũ
-        $('span[id$="Error"]').text('');
+            // Reset các lỗi cũ
+            $('span[id$="Error"]').text('');
 
-        // Kiểm tra các trường bắt buộc
-        var isValid = true;
-        if ($('#ten').val() === '') {
-            $('#tenSPError').text('Tên sản phẩm không được để trống');
-            isValid = false;
-        }
-
-        // Kiểm tra Thương hiệu
-        if ($('#thuonghieu').val() === '') {
-            $('#thuonghieuError').text('Vui lòng chọn ');
-            isValid = false;
-        }
-
-        // Kiểm tra Màu sắc
-        if ($('#mausac').val() === '') {
-            $('#mausacError').text('Vui lòng chọn ');
-            isValid = false;
-        }
-
-        // Kiểm tra Chất liệu
-        if ($('#chatlieu').val() === '') {
-            $('#chatlieuError').text('Vui lòng chọn ');
-            isValid = false;
-        }
-
-        // Kiểm tra Xuất xứ
-        if ($('#xuatxu').val() === '') {
-            $('#xuatxuError').text('Vui lòng chọn ');
-            isValid = false;
-        }
-
-        // Kiểm tra Thể loại
-        if ($('#theloai').val() === '') {
-            $('#theloaiError').text('Vui lòng chọn ');
-            isValid = false;
-        }
-
-        // Kiểm tra Size
-        if ($('#kichco').val() === '') {
-            $('#kichcoError').text('Vui lòng chọn ');
-            isValid = false;
-        }
-
-        // Kiểm tra Tồn kho
-        var stockValue = $('#tonkho').val();
-        if (stockValue === '' || parseInt(stockValue) < 0) {
-            $('#tonkhoError').text('Tồn kho không được để trống và phải là số không âm');
-            isValid = false;
-        }
-
-        // Kiểm tra Giá bán
-        var priceValue = $('#gia').val();
-        if (priceValue === '' || parseFloat(priceValue) < 0) {
-            $('#giaError').text('Giá bán không được để trống và phải là số không âm');
-            isValid = false;
-        }
-
-        // Nếu có lỗi, không gửi dữ liệu
-        if (!isValid) return;
-
-        // Thu thập dữ liệu từ form
-        var formData = new FormData($('#addProductForm')[0]);
-        console.log(formData); // Log formData để kiểm tra
-
-        // Gửi dữ liệu qua AJAX để thêm sản phẩm
-        $.ajax({
-            url: 'http://localhost:8080/api/products/add', // Đường dẫn API
-            method: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (response) {
-                console.log(response);
-                alert('Sản phẩm đã được thêm thành công!');
-                $('#addProductModal').removeClass('show').addClass('fade');
-                $('body').removeClass('modal-open');
-                $('.modal-backdrop').remove();
-                $('#addProductForm')[0].reset(); // Reset form
-                loadProductData(); // Reload lại bảng sản phẩm
-            },
-            error: function (err) {
-                alert('Đã có lỗi xảy ra. Vui lòng thử lại!');
-                console.error(err);
+            // Kiểm tra các trường bắt buộc
+            var isValid = true;
+            if ($('#ten').val() === '') {
+                $('#tenSPError').text('Tên sản phẩm không được để trống');
+                isValid = false;
             }
+
+            // Kiểm tra Thương hiệu
+            if ($('#thuonghieu').val() === '') {
+                $('#thuonghieuError').text('Vui lòng chọn ');
+                isValid = false;
+            }
+
+            // Kiểm tra Màu sắc
+            if ($('#mausac').val() === '') {
+                $('#mausacError').text('Vui lòng chọn ');
+                isValid = false;
+            }
+
+            // Kiểm tra Chất liệu
+            if ($('#chatlieu').val() === '') {
+                $('#chatlieuError').text('Vui lòng chọn ');
+                isValid = false;
+            }
+
+            // Kiểm tra Xuất xứ
+            if ($('#xuatxu').val() === '') {
+                $('#xuatxuError').text('Vui lòng chọn ');
+                isValid = false;
+            }
+
+            // Kiểm tra Thể loại
+            if ($('#theloai').val() === '') {
+                $('#theloaiError').text('Vui lòng chọn ');
+                isValid = false;
+            }
+
+            // Kiểm tra Size
+            if ($('#kichco').val() === '') {
+                $('#kichcoError').text('Vui lòng chọn ');
+                isValid = false;
+            }
+
+            // Kiểm tra Tồn kho
+            var stockValue = $('#tonkho').val();
+            if (stockValue === '' || parseInt(stockValue) < 0) {
+                $('#tonkhoError').text('Tồn kho không được để trống và phải là số không âm');
+                isValid = false;
+            }
+
+            // Kiểm tra Giá bán
+            var priceValue = $('#gia').val();
+            if (priceValue === '' || parseFloat(priceValue) < 0) {
+                $('#giaError').text('Giá bán không được để trống và phải là số không âm');
+                isValid = false;
+            }
+
+            // Nếu có lỗi, không gửi dữ liệu
+            if (!isValid) return;
+
+            // Thu thập dữ liệu từ form
+            var formData = new FormData($('#addProductForm')[0]);
+            console.log(formData); // Log formData để kiểm tra
+
+            // Gửi dữ liệu qua AJAX để thêm sản phẩm
+            $.ajax({
+                url: 'http://localhost:8080/api/products/add', // Đường dẫn API
+                method: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    console.log(response);
+                    alert('Product added successfully!');
+                    $('#addProductModal').removeClass('show').addClass('fade');
+                    $('body').removeClass('modal-open');
+                    $('.modal-backdrop').remove();
+                    $('#addProductForm')[0].reset(); // Reset form
+                    // loadProductData(); // Reload lại bảng sản phẩm
+                    window.location.reload();
+                },
+                error: function (err) {
+                    alert('Đã có lỗi xảy ra. Vui lòng thử lại!');
+                    console.error(err);
+                }
+            });
         });
-    });
-}
+    }

@@ -9,9 +9,10 @@ $(document).ready(function () {
             success: function (data) {
                 // Xử lý dữ liệu trả về từ API
                 let tableRows = '';
-                data.forEach(function (user) {
+                data.forEach(function (user,index) {
                     tableRows += `
                         <tr>
+                            <td>${index+1}</td> <!-- ID (UUID) -->
                             <td>${user.id}</td> <!-- ID (UUID) -->
                             <td>${user.maNguoiDung}</td> <!-- Mã người dùng, thay thế cho user.id -->
                             <td>${user.hoTen}</td> <!-- Họ tên -->

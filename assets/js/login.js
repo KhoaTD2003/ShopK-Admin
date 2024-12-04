@@ -33,7 +33,7 @@ $(document).ready(function () {
 
 
                 // Sau khi lưu, bạn có thể chuyển hướng người dùng đến trang khác nếu cần
-                window.location.href = "customers.html"; // Ví dụ chuyển đến trang dashboard
+                window.location.href = "banhang.html"; // Ví dụ chuyển đến trang dashboard
             },
             error: function (xhr, status, error) {
                 console.error("Lỗi:", xhr.responseText);
