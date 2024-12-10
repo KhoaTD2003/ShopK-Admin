@@ -15,9 +15,9 @@ $(document).ready(function () {
                         <td>${invoice.tenKH}</td> <!-- Tên Khách -->
                         <td>${invoice.sdt}</td> <!-- Tên Khách -->
                         <td>${formatDate(new Date(invoice.ngayTao))}</td> <!-- Ngày tạo -->
-                        <td>${invoice.tongTien}</td> <!-- Tên Khách -->
-                        <td>${invoice.tienGiam}</td> <!-- Tên Khách -->
-                        <td>${invoice.tienThu}</td> <!-- Tên Khách -->
+                        <td>${formatCurrency(invoice.tongTien)}</td> <!-- Tổng tiền -->
+                        <td>${formatCurrency(invoice.tienGiam)}</td> <!-- Tiền giảm -->
+                        <td>${formatCurrency(invoice.tienThu)}</td> <!-- Tiền thu -->
                         <td>
                              ${invoice.ghiChu === 'Online'
                             ? '<i class="fas fa-globe" style="color: blue;"></i> Online'
@@ -25,9 +25,16 @@ $(document).ready(function () {
                         </td>
 
                         <td>${invoice.trangThai || 'N/A'}</td> <!-- Trạng thái tài khoản -->
+                      
                         <td class="text-end">
-                            <button class="btn btn-outline-info btn-rounded editInvoiceBtn" data-id="${invoice.id}"><i class="fas fa-pen"></i>Xem</button>
-                            <button class="btn btn-outline-danger btn-rounded" data-id="${invoice.id}"><i class="fas fa-trash"></i> Delete</button>
+                        <button class="btn btn-outline-info btn-rounded editInvoiceBtn" data-id="${invoice.id}">
+                            <i class="fas fa-pen"></i> Xem
+                        </button>
+                      ${invoice.trangThai !== 'Ðã Thanh Toán' ? `
+                        <button class="btn btn-outline-danger btn-rounded" data-id="${invoice.id}">
+                           <i class="fas fa-trash"></i> Delete
+                        </button>
+                         ` : ''}
                         </td>
                     </tr>
                 `;
@@ -42,8 +49,7 @@ $(document).ready(function () {
         });
     }
     // <td>${invoice.id}</td> <!-- ID Hóa đơn -->
-
-
+       
     loadInvoiceData();
 
     $(document).on('hidden.bs.modal', '#editInvoiceModal', function () {
@@ -52,6 +58,12 @@ $(document).ready(function () {
     });
 
 });
+
+
+function formatCurrency(amount) {
+    if (typeof amount !== 'number') amount = Number(amount); // Đảm bảo đầu vào là số
+    return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+}
 
 function formatDate(date) {
     let datePart = [
@@ -103,7 +115,7 @@ function registerEdit() {
                             <td hidden>${item.id}</td> <!-- Tên sản phẩm -->
                             <td>${item.tenSanPham}</td> <!-- Tên sản phẩm -->
                             <td>${item.soLuong}</td> <!-- Số lượng -->
-                            <td>${item.donGia.toFixed(2)}</td> <!-- Đơn giá -->
+                            <td>${formatCurrency(item.donGia.toFixed(2))}</td> <!-- Đơn giá -->
                             <td>
                                  <span class="${item.trangThai ? 'badge bg-success' : 'badge bg-warning'}">
                                   ${item.trangThai ? 'Đã Thanh Toán' : 'Chưa Thanh Toán'}

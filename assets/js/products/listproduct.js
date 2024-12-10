@@ -22,7 +22,7 @@ $(document).ready(function () {
                         <td>${product.chatLieuTen}</td> <!-- Tên chất liệu -->
                         <td>${product.sizeTen}</td> <!-- Tên size -->
                         <td>${product.soLuongTon}</td> <!-- Số lượng tồn -->
-                        <td>${product.giaBan}</td> <!-- Số lượng tồn -->
+                        <td>${formatCurrency(product.giaBan)}</td> <!-- Số lượng tồn -->
                         <td>${product.moTa}</td> <!-- Mô tả sản phẩm -->
                         <td><img src="/assets/${product.anh}" width="50" height="50" /></td>
                         <td>
@@ -46,6 +46,11 @@ $(document).ready(function () {
                 alert('Có lỗi xảy ra khi tải dữ liệu sản phẩm.');
             }
         });
+    }
+
+    function formatCurrency(amount) {
+        if (typeof amount !== 'number') amount = Number(amount); // Đảm bảo đầu vào là số
+        return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
     }
 
     function renderPagination(totalPages, currentPage) {

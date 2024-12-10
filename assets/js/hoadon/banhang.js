@@ -1,3 +1,4 @@
+
 function addToCart(product) {
     // Lấy giỏ hàng từ localStorage (nếu có), nếu không thì khởi tạo giỏ hàng rỗng
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -31,7 +32,7 @@ function renderCart() {
         // Định dạng giá của sản phẩm và tổng tiền cho sản phẩm
         const formattedPrice = product.price.toLocaleString('vi-VN');
         const formattedTotal = (product.price * product.quantity).toLocaleString('vi-VN');
-        
+
         return `
             <tr>
                 <td>${product.prodName}</td>
@@ -51,6 +52,104 @@ function renderCart() {
 }
 
 $(document).ready(function () {
+    $('#customerPhone').on('input', function () {
+        const customerPhone = $(this).val().trim();
+
+        if (customerPhone.length > 10) {
+            $(this).val(customerPhone.slice(0, 10)); // Cắt bớt nếu quá 10 ký tự
+            alert('Số điện thoại không hợp lệ');
+        }
+
+        // Kiểm tra tính hợp lệ của số điện thoại
+        if (/^\d{10}$/.test(customerPhone)) {
+
+            // Gọi API để lấy tên khách hàng
+            $.ajax({
+                url: `http://127.0.0.1:8080/api/find?sdt=${customerPhone}`, // Thay bằng URL của bạn
+                method: 'GET',
+                success: function (data) {
+                    if (data) {
+                        $('#customerName').val(data); // Điền tên khách hàng vào ô
+                    } else {
+                        $('#customerName').val(''); // Nếu không có tên, xóa ô tên
+                    }
+                },
+                error: function () {
+                    $('#customerName').val(''); // Xóa tên nếu không tìm thấy
+                    // alert('Không tìm thấy khách hàng với số điện thoại này.');
+                }
+            });
+        } else {
+            $('#customerName').val(''); // Xóa tên nếu số điện thoại không hợp lệ
+            // alert('Số điện thoại không hợp lệ');
+
+        }
+    });
+
+
+
+    function loadDiscounts() {
+        $.ajax({
+            url: 'http://127.0.0.1:8080/api/giamgia', // Thay bằng URL API thực tế
+            type: 'GET',
+            dataType: 'json',
+            success: function (response) {
+                console.log("Danh sách giảm giá:", response);
+
+                // Lấy phần tử dropdown "Giảm giá"
+                const discountSelect = $('#discountSelect');
+
+                // Xóa các option cũ (nếu có)
+                discountSelect.empty();
+
+                // Thêm lựa chọn mặc định
+                discountSelect.append('<option value="0">Không giảm giá</option>');
+
+                // Thêm các tùy chọn giảm giá từ API
+                response.forEach(discount => {
+                    if (discount.soLansd > 0 && discount.trangThai == true) { // Kiểm tra nếu số lần sử dụng lớn hơn 0
+                        // discountSelect.append(`<option value="${discount.ten}">Giảm ${discount.giamGia}</option>`);
+                        const value = discount.giamGia.replace('%', '').trim(); // Lấy giá trị giảm giá
+                        // const option = `<option value="${value}" data-id="${discount.ma}">${discount.ten} - ${discount.giamGia}% (Còn ${discount.soLansd} lượt)</option>`;
+
+                        const option = `<option value="${discount.giamGia}" data-id="${discount.ma}" data-min="${discount.giaTriMin}">
+                        ${discount.ten} - ${discount.giamGia} Đơn Min ${formatCurrency(discount.giaTriMin)} (Còn ${discount.soLansd} lượt)</option>`;
+
+                        discountSelect.append(option);
+                    }
+                });
+
+                // Gán sự kiện khi thay đổi mức giảm giá
+                discountSelect.change(updateTotalAmount);
+            },
+            error: function (xhr, status, error) {
+                console.error('Lỗi khi lấy danh sách giảm giá:', error);
+            }
+        });
+    }
+
+    function formatCurrency(amount) {
+        if (typeof amount !== 'number') amount = Number(amount); // Đảm bảo đầu vào là số
+        return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
+
+    loadDiscounts()
+
+    var maGiamGiaSelected;
+
+    $('#discountSelect').on('change', function () {
+        const selectedOption = $(this).find('option:selected'); // Lấy option được chọn
+        maGiamGiaSelected = selectedOption.data('id'); // Lấy giá trị thuộc tính data-id
+
+        // const minOrderValue = parseFloat(selectedOption.data('min')) || 0; // Lấy giá trị tối thiểu từ data-min
+        // const totalAmount = parseFloat($('#totalAmount').text()); // Tổng tiền từ giỏ hàng
+
+        // if (totalAmount < minOrderValue) {
+        //     alert(`Đơn hàng cần đạt tối thiểu ${minOrderValue} VNĐ để áp dụng mã giảm giá này.`);
+        //     $(this).val(''); // Reset dropdown
+        // }
+    });
+
     // Xử lý nút "Thanh toán"
     $('#checkoutBtn').click(function (e) {
         e.preventDefault();
@@ -64,6 +163,10 @@ $(document).ready(function () {
             return;
         }
 
+        if (!/^\d{10}$/.test(customerPhone)) {
+            alert("Số điện thoại phải có đúng 10 chữ số.");
+            return; // Ngăn chặn việc gửi yêu cầu
+        }
         // Lấy giỏ hàng từ localStorage
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
@@ -76,10 +179,25 @@ $(document).ready(function () {
         const totalAmount = cart.reduce((total, product) => total + (product.price * product.quantity), 0);
 
         // Lấy giá trị giảm giá và tính tổng sau giảm
-        const discount = parseFloat($('#discountSelect').val()|| 0);
-        const finalAmount = totalAmount - (totalAmount * discount / 100);
+        // const discount = parseFloat($('#discountSelect').val() || 0);
+        // const finalAmount = totalAmount - (totalAmount * discount / 100);
 
+        let discountPercentage = $('#discountSelect').val().trim(); // Lấy giá trị giảm giá từ form
+        let finalAmount = totalAmount; // Khởi tạo số tiền cuối cùng bằng tổng tiền ban đầu
 
+        console.log(discountPercentage);
+        if (typeof discountPercentage === 'string' && discountPercentage.includes('%')) {
+            // Nếu giá trị giảm giá là phần trăm
+            discountPercentage = parseFloat(discountPercentage.replace('%', '').trim()); // Chuyển phần trăm thành số
+            finalAmount = totalAmount - (totalAmount * discountPercentage / 100); // Tính số tiền sau giảm giá
+        } else if (typeof discountPercentage === 'string' && !isNaN(discountPercentage)) {
+            // Nếu giá trị giảm giá là số tiền
+            discountPercentage = parseFloat(discountPercentage.trim()); // Chuyển số tiền thành số thực
+            finalAmount = totalAmount - discountPercentage; // Tính số tiền sau giảm giá theo số tiền
+        } else {
+            // Nếu không có giá trị giảm giá hợp lệ, không thay đổi số tiền cuối cùng
+            finalAmount = totalAmount;
+        }
 
         // Chuẩn bị dữ liệu để gửi đến API
         const invoiceData = {
@@ -96,53 +214,73 @@ $(document).ready(function () {
             tongTien: totalAmount,
             tienThu: finalAmount,
             tienGiam: totalAmount - finalAmount,
-            // maGiamGia: discount,  // Mã giảm giá nếu có
+            maGiamGia: maGiamGiaSelected,  // Mã giảm giá nếu có
             ghiChu: "In Store"
         };
 
         if (confirm('Bạn có chắc chắn thanh toán?')) {
 
-        // Gửi yêu cầu tạo hóa đơn và thanh toán
-        $.ajax({
-            url: 'http://127.0.0.1:8080/api/datdon/taiquay', // Thay bằng URL của bạn
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(invoiceData),
-            success: function (response) {
-                alert('Thanh toán thành công!');
-                console.log('Kết quả thanh toán:', response);
+            // Gửi yêu cầu tạo hóa đơn và thanh toán
+            $.ajax({
+                url: 'http://127.0.0.1:8080/api/datdon/taiquay', // Thay bằng URL của bạn
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(invoiceData),
+                success: function (response) {
+                    alert('Thanh toán thành công!');
+                    console.log('Kết quả thanh toán:', response);
+                    loadDiscounts();
+                    // Xóa giỏ hàng và làm mới giao diện
+                    localStorage.removeItem('cart');
+                    $('#cartItems').empty();
+                    $('#totalAmount').text('0 ');
+                    $('#finalAmount').text('0 ');
+                    $('#customerForm')[0].reset(); // Đặt lại toàn bộ form
+                },
+                error: function (xhr, status, error) {
+                    // console.error('Lỗi khi thanh toán:', error);
+                    console.log(xhr)
+                    alert(xhr.responseText);
 
-                // Xóa giỏ hàng và làm mới giao diện
-                localStorage.removeItem('cart');
-                $('#cartItems').empty();
-                $('#totalAmount').text('0 ');
-                $('#finalAmount').text('0 ');
-                $('#customerForm')[0].reset(); // Đặt lại toàn bộ form
-
-
-            },
-            error: function (xhr, status, error) {
-                console.error('Lỗi khi thanh toán:', error);
-                alert('Có lỗi xảy ra khi thanh toán.');
-            }
-        });
-    }
+                    // alert('Có lỗi xảy ra khi thanh toán.');
+                }
+            });
+        }
     });
 });
 
 function updateTotalAmount() {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
-    
+
     // Tính tổng tiền giỏ hàng
     let totalAmount = cart.reduce((total, product) => total + (product.price * product.quantity), 0);
-    
+
     // Lấy giá trị giảm giá từ dropdown
-    const discountPercentage = parseFloat(document.getElementById('discountSelect').value) || 0;
+    // const discountPercentage = parseFloat(document.getElementById('discountSelect').value) || 0;
 
     // Tính tổng tiền sau giảm giá
-    const discountAmount = (totalAmount * discountPercentage) / 100;
-    const finalAmount = totalAmount - discountAmount;
+    // const discountAmount = (totalAmount * discountPercentage) / 100;
+    // const finalAmount = totalAmount - discountAmount;
 
+    let discountPercentage = $('#discountSelect').val().trim(); // Lấy giá trị giảm giá từ form
+    let finalAmount = totalAmount; // Khởi tạo số tiền cuối cùng bằng tổng tiền ban đầu
+
+    console.log(discountPercentage);
+    if (typeof discountPercentage === 'string' && discountPercentage.includes('%')) {
+        // Nếu giá trị giảm giá là phần trăm
+        discountPercentage = parseFloat(discountPercentage.replace('%', '').trim()); // Chuyển phần trăm thành số
+        finalAmount = totalAmount - (totalAmount * discountPercentage / 100); // Tính số tiền sau giảm giá
+    } else if (typeof discountPercentage === 'string' && !isNaN(discountPercentage)) {
+        // Nếu giá trị giảm giá là số tiền
+        discountPercentage = parseFloat(discountPercentage.trim()); // Chuyển số tiền thành số thực
+        finalAmount = totalAmount - discountPercentage; // Tính số tiền sau giảm giá theo số tiền
+    } else {
+        // Nếu không có giá trị giảm giá hợp lệ, không thay đổi số tiền cuối cùng
+        finalAmount = totalAmount;
+    }
+    if (finalAmount < 0) {
+        finalAmount = 0
+    }
     // Định dạng số tiền
     const formattedTotalAmount = totalAmount.toLocaleString('vi-VN');
     const formattedFinalAmount = finalAmount.toLocaleString('vi-VN');
@@ -152,48 +290,13 @@ function updateTotalAmount() {
     document.getElementById('finalAmount').textContent = `${formattedFinalAmount} `; // Tổng sau giảm
 }
 
-function loadDiscounts() {
-    $.ajax({
-        url: 'http://127.0.0.1:8080/api/giamgia', // Thay bằng URL API thực tế
-        type: 'GET',
-        dataType: 'json',
-        success: function (response) {
-            console.log("Danh sách giảm giá:", response);
-            
-            // Lấy phần tử dropdown "Giảm giá"
-            const discountSelect = $('#discountSelect');
-
-            // Xóa các option cũ (nếu có)
-            discountSelect.empty();
-
-            // Thêm lựa chọn mặc định
-            discountSelect.append('<option value="0">Không giảm giá</option>');
-
-            // Thêm các tùy chọn giảm giá từ API
-            response.forEach(discount => {
-                // discountSelect.append(`<option value="${discount.ten}">Giảm ${discount.giamGia}</option>`);
-                const value = discount.giamGia.replace('%', '').trim(); // Lấy giá trị giảm giá
-                const option = `<option value="${value}">${discount.ten} - ${discount.giamGia}</option>`;
-                discountSelect.append(option);
-            });
-
-            // Gán sự kiện khi thay đổi mức giảm giá
-            discountSelect.change(updateTotalAmount);
-        },
-        error: function (xhr, status, error) {
-            console.error('Lỗi khi lấy danh sách giảm giá:', error);
-        }
-    });
-}
-
-loadDiscounts()
 
 // Hàm xóa sản phẩm khỏi giỏ hàng
 function removeFromCart(prodId) {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     // Lọc ra sản phẩm không phải có prodId cần xóa
     cart = cart.filter(product => product.prodId !== prodId);
-    
+
     // Lưu giỏ hàng mới vào localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
 

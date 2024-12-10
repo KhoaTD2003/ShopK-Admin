@@ -304,7 +304,6 @@
 
 
 
-
                                     <!-- Modal Add Sản Phẩm -->
                                     <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
                                         aria-labelledby="addProductModalLabel" aria-hidden="true">
@@ -354,11 +353,10 @@
                                                                     <!-- Hiển thị lỗi tại đây -->
                                                                     <div class="input-group-append">
                                                                         <button class="btn btn-outline-secondary"
-                                                                            type="button" id="addBrandBtn">+</button>
+                                                                            type="button" id="openAddBrandModal">+</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
-
                                                             <div class="col-md-6">
                                                                 <label for="color">Màu sắc</label>
                                                                 <div class="input-group">
@@ -372,6 +370,7 @@
                                                                         <button class="btn btn-outline-secondary"
                                                                             type="button" id="addColorBtn">+</button>
                                                                     </div>
+
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -506,6 +505,7 @@
                                         </div>
                                     </div>
 
+                                    <div id="addBrandModalContainer"></div>
 
                                 </tbody>
                             </table>
@@ -524,7 +524,9 @@
     <script src="assets/js/initiate-datatables.js"></script>
     <script src="assets/js/script.js"></script>
     <script src="assets/js/auth.js"></script>
+    <script src="assets/js/products/brand.js"></script>
     <script src="assets/js/products/listproduct.js"></script>
+
     <script>
         // Hàm kiểm tra trạng thái đăng nhập và chuyển hướng nếu chưa đăng nhập
         function checkLogin() {
