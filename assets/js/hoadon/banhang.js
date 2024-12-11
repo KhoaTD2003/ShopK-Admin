@@ -1,26 +1,60 @@
-
 function addToCart(product) {
-    // Lấy giỏ hàng từ localStorage (nếu có), nếu không thì khởi tạo giỏ hàng rỗng
+    // Lấy giỏ hàng từ localStorage (nếu có)
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    // Kiểm tra xem sản phẩm đã có trong giỏ chưa
-    let existingProductIndex = cart.findIndex(item => item.prodId === product.prodId);
+    console.log("Adding product to cart:", product);
 
-    if (existingProductIndex !== -1) {
-        // Nếu sản phẩm đã có trong giỏ, tăng số lượng lên 1
-        cart[existingProductIndex].quantity += 1;
+    // Kiểm tra xem sản phẩm đã có trong giỏ chưa
+    let productIndex = cart.findIndex(item => item.prodId === product.prodId);
+
+    // Kiểm tra nếu số lượng sản phẩm nhập vào vượt quá số lượng tồn kho
+    if (product.quantity > product.stock) {
+        alert(`Sản phẩm "${product.prodName}" không đủ số lượng trong kho. Tồn kho hiện tại: ${product.stock}`);
+        return; // Dừng việc thêm sản phẩm vào giỏ hàng nếu số lượng vượt quá tồn kho
+    }
+
+    if (productIndex !== -1) {
+        // Nếu sản phẩm đã có trong giỏ, tăng số lượng của sản phẩm đó
+        if (cart[productIndex].quantity + product.quantity > product.stock) {
+            alert(`Không thể thêm vào giỏ, số lượng sản phẩm "${product.prodName}" vượt quá số lượng tồn kho. Tồn kho: ${product.stock}`);
+            return;
+        }
+        cart[productIndex].quantity += product.quantity; // Tăng số lượng
     } else {
-        // Nếu chưa có, thêm sản phẩm mới vào giỏ
+        // Nếu chưa có trong giỏ, thêm sản phẩm vào giỏ
         cart.push(product);
     }
 
     // Lưu giỏ hàng lại vào localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
-
-    // Cập nhật giỏ hàng trên giao diện
+    console.log("Giỏ hàng sau khi thêm:", cart); // In giỏ hàng ra console
     renderCart();
     updateTotalAmount()
+    // Thông báo thêm thành công
+    // alert("Đã thêm vào giỏ hàng thành công!");
 }
+// function addToCart(product) {
+//     // Lấy giỏ hàng từ localStorage (nếu có), nếu không thì khởi tạo giỏ hàng rỗng
+//     let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+//     // Kiểm tra xem sản phẩm đã có trong giỏ chưa
+//     let existingProductIndex = cart.findIndex(item => item.prodId === product.prodId);
+
+//     if (existingProductIndex !== -1) {
+//         // Nếu sản phẩm đã có trong giỏ, tăng số lượng lên 1
+//         cart[existingProductIndex].quantity += 1;
+//     } else {
+//         // Nếu chưa có, thêm sản phẩm mới vào giỏ
+//         cart.push(product);
+//     }
+
+//     // Lưu giỏ hàng lại vào localStorage
+//     localStorage.setItem('cart', JSON.stringify(cart));
+
+//     // Cập nhật giỏ hàng trên giao diện
+//     renderCart();
+//     updateTotalAmount()
+// }
 
 // Hàm hiển thị giỏ hàng
 function renderCart() {
@@ -197,6 +231,8 @@ $(document).ready(function () {
         } else {
             // Nếu không có giá trị giảm giá hợp lệ, không thay đổi số tiền cuối cùng
             finalAmount = totalAmount;
+        } if (finalAmount < 0) {
+            finalAmount = 0
         }
 
         // Chuẩn bị dữ liệu để gửi đến API
@@ -229,6 +265,7 @@ $(document).ready(function () {
                 success: function (response) {
                     alert('Thanh toán thành công!');
                     console.log('Kết quả thanh toán:', response);
+                    location.reload();
                     loadDiscounts();
                     // Xóa giỏ hàng và làm mới giao diện
                     localStorage.removeItem('cart');
@@ -374,6 +411,7 @@ function buildProductHtml(product) {
                         prodId: '${product.idSP}', 
                         prodName: '${product.tenSP}', 
                         price: ${product.giaBan}, 
+                        stock:${product.stock},
                         quantity: 1
                     })">Thêm vào giỏ</button>
                 </div>
