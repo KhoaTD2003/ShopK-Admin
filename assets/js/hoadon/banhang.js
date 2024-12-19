@@ -492,3 +492,77 @@ $("#searchInput").on("input", function () {
 displayProducts(1);
 
 
+function createInvoice() {
+    // Lấy giỏ hàng từ localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    if (cart.length > 0) {
+        // Tạo hóa đơn từ giỏ hàng
+        let invoice = {
+            id: new Date().getTime(), // Sử dụng thời gian làm ID hóa đơn
+            items: cart,
+            status: 'pending' // Trạng thái hóa đơn là chờ thanh toán
+        };
+
+        // Lấy danh sách hóa đơn từ localStorage hoặc khởi tạo mảng mới
+        let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+
+        // Thêm hóa đơn mới vào danh sách
+        invoices.push(invoice);
+
+        // Lưu danh sách hóa đơn vào localStorage
+        localStorage.setItem('invoices', JSON.stringify(invoices));
+
+        // Hiển thị hóa đơn chờ
+        renderPendingInvoices();
+
+        // Xóa giỏ hàng sau khi tạo hóa đơn
+        localStorage.removeItem('cart');
+        renderCart(); // Cập nhật lại giỏ hàng
+    } else {
+        alert('Giỏ hàng trống, không thể tạo hóa đơn.');
+    }
+}
+
+function renderPendingInvoices() {
+    let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+    
+    // Lọc ra các hóa đơn có trạng thái là 'pending'
+    let pendingInvoices = invoices.filter(invoice => invoice.status === 'pending');
+
+    // Tạo nội dung danh sách hóa đơn chờ
+    let invoicesHtml = pendingInvoices.map(invoice => {
+        return `
+            <div class="invoice-card">
+                <h6>Hóa đơn ID: ${invoice.id}</h6>
+                <button onclick="viewInvoice(${invoice.id})">Xem hóa đơn</button>
+                <button onclick="deleteInvoice(${invoice.id})">Xóa hóa đơn</button>
+            </div>
+        `;
+    }).join('');
+
+    // Hiển thị danh sách hóa đơn chờ lên giao diện
+    document.getElementById('pendingInvoices').innerHTML = invoicesHtml;
+}
+function viewInvoice(invoiceId) {
+    let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+    let invoice = invoices.find(invoice => invoice.id === invoiceId);
+
+    if (invoice) {
+        // Hiển thị thông tin chi tiết hóa đơn ở đây
+        console.log(invoice);
+    }
+}
+function deleteInvoice(invoiceId) {
+    let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+    
+    // Lọc ra các hóa đơn không phải là 'pending'
+    invoices = invoices.filter(invoice => invoice.id !== invoiceId);
+
+    // Lưu lại danh sách hóa đơn đã cập nhật vào localStorage
+    localStorage.setItem('invoices', JSON.stringify(invoices));
+
+    // Cập nhật lại danh sách hóa đơn chờ
+    renderPendingInvoices();
+}
+document.getElementById('createInvoice').addEventListener('click', createInvoice);

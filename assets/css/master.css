@@ -80,7 +80,7 @@ td {
 
 /* Tăng chiều cao của modal */
 .modal-dialog {
-    max-width: 80%; /* Tăng kích thước của modal */
+    max-width: 65%; /* Tăng kích thước của modal */
 }
 
 /* Tăng chiều cao của các trường input và textarea */

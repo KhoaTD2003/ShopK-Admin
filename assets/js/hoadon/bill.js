@@ -49,7 +49,7 @@ $(document).ready(function () {
         });
     }
     // <td>${invoice.id}</td> <!-- ID Hóa đơn -->
-       
+
     loadInvoiceData();
 
     $(document).on('hidden.bs.modal', '#editInvoiceModal', function () {
@@ -100,7 +100,9 @@ function registerEdit() {
                 // Tạo các hàng dữ liệu từ mảng trả về
                 let productRows = '';
                 invoiceData.forEach(function (item) {
-                    totalAmount += item.tongTien; // Cộng dồn tổng tiền
+                    totalAmount = item.tongTien; // Cộng dồn tổng tiền
+                    discountAmount = item.giamGia;
+                    totalAfter = item.tongTienSauGiamGia;
 
                     //      // Kiểm tra trạng thái của hóa đơn
                     //      let statusText = item.trangThai === 'PENDING' ? 'Chưa Thanh Toán' : 'Đã Thanh Toán';
@@ -111,11 +113,12 @@ function registerEdit() {
                     //     </span>
                     // </td>
                     productRows += `
-                        <tr>
+                        <tr data-id="${item.id}" data-status="${item.trangThai}"> <!-- Lưu id và trạng thái trong data attribute -->
                             <td hidden>${item.id}</td> <!-- Tên sản phẩm -->
                             <td>${item.tenSanPham}</td> <!-- Tên sản phẩm -->
                             <td>${item.soLuong}</td> <!-- Số lượng -->
-                            <td>${formatCurrency(item.donGia.toFixed(2))}</td> <!-- Đơn giá -->
+                            <td>${formatCurrency(item.donGia)}</td> <!-- Đơn giá -->
+
                             <td>
                                  <span class="${item.trangThai ? 'badge bg-success' : 'badge bg-warning'}">
                                   ${item.trangThai ? 'Đã Thanh Toán' : 'Chưa Thanh Toán'}
@@ -123,19 +126,18 @@ function registerEdit() {
                             </td>
 
                         
-                            <td>
-                                <button class="btn btn-outline-info btn-rounded updateStatusBtn" data-id="${item.id}" data-status="${item.trangThai}">
-                                    <i class="fas fa-sync-alt"></i> Cập nhật trạng thái
-                                </button>
-                            </td>
+                           
                         </tr>`;
                 });
 
                 // Gắn các hàng vào <tbody>
                 $('#productTableBody').html(productRows);
 
-                $('#totalAmountContainer').text(`Tổng tiền: ${totalAmount.toFixed(2)} VND`);
+                $('#totalAmountContainer').text(`Tổng tiền: ${formatCurrency(totalAmount)} `);
 
+                $('#discountAmountContainer').text(`Tiền giảm: ${formatCurrency(discountAmount)} `);
+
+                $('#totalAfterDiscountContainer').text(`Tổng tiền sau giảm: ${formatCurrency(totalAfter)} `);
 
                 // Điền ID hóa đơn vào input ẩn
                 $('#invoiceId').val(id);
@@ -152,38 +154,79 @@ function registerEdit() {
 
 
 // Xử lý sự kiện cập nhật trạng thái chi tiết hóa đơn
-$('#productTableBody').on('click', '.updateStatusBtn', function () {
-    const chiTietId = $(this).data('id'); // ID của chi tiết hóa đơn
-    const currentStatus = $(this).data('status'); // Trạng thái hiện tại của chi tiết hóa đơn
-    const newStatus = !currentStatus; // Lật trạng thái (nếu là true thì thành false, ngược lại)
+// $('#productTableBody').on('click', '.updateStatusBtn', function () {
+//     const chiTietId = $(this).data('id'); // ID của chi tiết hóa đơn
+//     const currentStatus = $(this).data('status'); // Trạng thái hiện tại của chi tiết hóa đơn
+//     const newStatus = !currentStatus; // Lật trạng thái (nếu là true thì thành false, ngược lại)
 
-    // Gửi yêu cầu cập nhật trạng thái chi tiết hóa đơn
-    $.ajax({
-        url: `http://localhost:8080/api/hoadon/${chiTietId}/update-details-status?newStatus=${newStatus}`,
-        type: 'PUT',
-        contentType: 'application/json',
-        data: JSON.stringify({ newStatus: newStatus }), // Gửi dữ liệu dưới dạng JSON
-        success: function (updatedChiTiet) {
-            console.log(updatedChiTiet); // Kiểm tra dữ liệu trả về trong console
+//     // Gửi yêu cầu cập nhật trạng thái chi tiết hóa đơn
+//     $.ajax({
+//         url: `http://localhost:8080/api/hoadon/${chiTietId}/update-details-status?newStatus=${newStatus}`,
+//         type: 'PUT',
+//         contentType: 'application/json',
+//         data: JSON.stringify({ newStatus: newStatus }), // Gửi dữ liệu dưới dạng JSON
+//         success: function (updatedChiTiet) {
+//             console.log(updatedChiTiet); // Kiểm tra dữ liệu trả về trong console
 
-            // Cập nhật lại trạng thái trong bảng
-            const row = $(`button[data-id="${chiTietId}"]`).closest('tr');
-            row.find('td:nth-child(6) span')
-                .removeClass('badge bg-success badge bg-warning')
-                .addClass(updatedChiTiet.trangThai ? 'badge bg-success' : 'badge bg-warning')
-                .text(updatedChiTiet.trangThai ? 'Đã Thanh Toán' : 'Chưa Thanh Toán');
+//             // Cập nhật lại trạng thái trong bảng
+//             const row = $(`button[data-id="${chiTietId}"]`).closest('tr');
+//             row.find('td:nth-child(6) span')
+//                 .removeClass('badge bg-success badge bg-warning')
+//                 .addClass(updatedChiTiet.trangThai ? 'badge bg-success' : 'badge bg-warning')
+//                 .text(updatedChiTiet.trangThai ? 'Đã Thanh Toán' : 'Chưa Thanh Toán');
 
-            // Cập nhật lại trạng thái nút
-            $(`button[data-id="${chiTietId}"]`).data('status', updatedChiTiet.trangThai);
+//             // Cập nhật lại trạng thái nút
+//             $(`button[data-id="${chiTietId}"]`).data('status', updatedChiTiet.trangThai);
 
-            // Hiển thị thông báo thành công
-            alert('Cập nhật trạng thái thành công!');
-            $('#editInvoiceModal').modal('hide');
+//             // Hiển thị thông báo thành công
+//             alert('Cập nhật trạng thái thành công!');
+//             $('#editInvoiceModal').modal('hide');
 
-        },
-        error: function () {
-            alert('Không thể cập nhật trạng thái chi tiết hóa đơn.');
-        }
+//         },
+//         error: function () {
+//             alert('Không thể cập nhật trạng thái chi tiết hóa đơn.');
+//         }
+//     });
+// });
+
+$('#productTableBody').on('click', 'tr', function () {
+    const productId = $(this).data('id'); // Lấy id từ data-id của dòng
+    const currentStatus = $(this).data('status'); // Lấy trạng thái hiện tại từ data-status
+
+    // Hiển thị khu vực cập nhật trạng thái
+    $('#statusUpdateContainer').show();
+
+    // Lắng nghe sự kiện khi nhấn nút "Cập nhật trạng thái"
+    $('#updateStatusBtn').off('click').on('click', function () {
+        const newStatus = !currentStatus; // Lật trạng thái (nếu true thành false, ngược lại)
+
+        // Gửi yêu cầu cập nhật trạng thái chi tiết hóa đơn
+        $.ajax({
+            url: `http://localhost:8080/api/hoadon/${productId}/update-details-status?newStatus=${newStatus}`,
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({ newStatus: newStatus }), // Gửi dữ liệu dưới dạng JSON
+            success: function (updatedChiTiet) {
+                console.log(updatedChiTiet); // Kiểm tra dữ liệu trả về trong console
+
+                // Cập nhật lại trạng thái trong bảng
+                const row = $('#productTableBody').find(`tr[data-id="${productId}"]`);
+                row.find('td:nth-child(4) span')
+                    .removeClass('badge bg-success badge bg-warning')
+                    .addClass(updatedChiTiet.trangThai ? 'badge bg-success' : 'badge bg-warning')
+                    .text(updatedChiTiet.trangThai ? 'Đã Thanh Toán' : 'Chưa Thanh Toán');
+
+                // Ẩn khu vực nút cập nhật trạng thái sau khi cập nhật
+
+                // Hiển thị thông báo thành công
+                alert('Cập nhật trạng thái thành công!');
+                $('#statusUpdateContainer').hide();
+                $('#editInvoiceModal').modal('hide');
+
+            },
+            error: function () {
+                alert('Không thể cập nhật trạng thái chi tiết hóa đơn.');
+            }
+        });
     });
 });
-
