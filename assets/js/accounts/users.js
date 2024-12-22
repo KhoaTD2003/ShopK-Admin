@@ -10,10 +10,10 @@ $(document).ready(function () {
             success: function (data) {
                 // Xử lý dữ liệu trả về từ API
                 let tableRows = '';
-                data.forEach(function (user,index) {
+                data.forEach(function (user, index) {
                     tableRows += `
                         <tr>
-                            <td>${index+1}</td> <!-- ID (UUID) -->
+                            <td>${index + 1}</td> <!-- ID (UUID) -->
                             <td>${user.id}</td> <!-- ID (UUID) -->
                             <td>${user.maNguoiDung}</td> <!-- Mã người dùng, thay thế cho user.id -->
                             <td>${user.hoTen}</td> <!-- Họ tên -->
@@ -22,17 +22,17 @@ $(document).ready(function () {
                             <td>${user.email || 'N/A'}</td> <!-- Email -->
                             <td>${user.sdt || 'N/A'}</td> <!-- Số điện thoại -->
                             <td>
-                                ${role === 'Admin' ? 
-                                    `<i id="trangThaiNguoiDung_${user.maNguoiDung}" class="fas fa-toggle-${user.trangThai ? 'on' : 'off'} status-toggle" style="font-size: 24px; color: ${user.trangThai ? 'green' : 'gray'}; cursor: pointer;" data-id="${user.id}"></i>` 
-                                       : 
-                                     `<i class="fas fa-lock" style="color: gray;"></i>`}
+                                ${role === 'Admin' ?
+                            `<i id="trangThaiNguoiDung_${user.maNguoiDung}" class="fas fa-toggle-${user.trangThai ? 'on' : 'off'} status-toggle" style="font-size: 24px; color: ${user.trangThai ? 'green' : 'gray'}; cursor: pointer;" data-id="${user.id}"></i>`
+                            :
+                            `<i class="fas fa-lock" style="color: gray;"></i>`}
                             </td>
         
                             <td class="text-end">
                                 ${role === 'Admin' ?
-                                    `<button class="btn btn-outline-info btn-rounded" data-id="${user.id}"><i class="fas fa-pen"></i> Edit</button>
+                            `<button class="btn btn-outline-info btn-rounded" data-id="${user.id}"><i class="fas fa-pen"></i> Edit</button>
                                     <button class="btn btn-outline-danger btn-rounded" data-id="${user.id}"><i class="fas fa-trash"></i> Delete</button>`
-                                    :`<span class="fas fa-lock" style="color: gray;"></span>`}
+                            : `<span class="fas fa-lock" style="color: gray;"></span>`}
                             </td>
                             
 
@@ -159,84 +159,93 @@ $(document).ready(function () {
         });
     }
 
-    
 
-    
 
-// Đảm bảo checkbox không được chọn khi mở form
-$('#roleToggle').prop('checked', false);  // Đảm bảo checkbox không được chọn khi mở form
 
-// Khi checkbox thay đổi (bật/tắt)
-$('#roleToggle').on('change', function() {
-    if ($(this).prop('checked')) {
-        // Hiển thị hộp thoại xác nhận khi chọn checkbox
-        var confirmChange = confirm('Bạn chắc chắn muốn chuyển thành nhân viên?');
-        
-        if (!confirmChange) {
-            // Nếu người dùng không xác nhận, bỏ chọn checkbox
-            $(this).prop('checked', false);
-        }
-    }
-});
 
-// Khi nhấn nút "Lưu thay đổi"
-$('#saveChangesButton').on('click', function () {
-    const userId = $('#id').val();  // Retrieve the user ID from the modal
-    var role = $("#roleToggle").prop("checked") ? "nhân viên" : "";  // Nếu checkbox được bật, gán giá trị "nhân viên", nếu không thì bỏ qua
+    // Đảm bảo checkbox không được chọn khi mở form
+    $('#roleToggle').prop('checked', false);  // Đảm bảo checkbox không được chọn khi mở form
 
-    // Xác nhận lần cuối khi bấm Lưu
-    var confirmSave = confirm('Bạn có chắc chắn muốn lưu thay đổi?');
-    
-    if (!confirmSave) {
-        return;  // Nếu người dùng không xác nhận, không thực hiện hành động lưu
-    }
+    // Khi checkbox thay đổi (bật/tắt)
+    $('#roleToggle').on('change', function () {
+        if ($(this).prop('checked')) {
+            // Hiển thị hộp thoại xác nhận khi chọn checkbox
+            var confirmChange = confirm('Bạn chắc chắn muốn chuyển thành nhân viên?');
 
-    const updatedUser = {
-        hoTen: $('#hoTen').val(),
-        namSinh: $('#namSinh').val(),
-        diaChi: $('#diaChi').val(),
-        email: $('#email').val(),
-        sdt: $('#sdt').val(),
-        maNguoiDung: $('#maNguoiDung').val(),  // Include maNguoiDung if needed
-    };
-
-    // Gửi yêu cầu cập nhật role
-    var formData = new FormData();
-    formData.append("role", role);
-
-    $.ajax({
-        url: `http://localhost:8080/api/loginAuth/updateRole/${userId}`,  // Gửi yêu cầu tới API updateRole
-        type: 'PUT',
-        data: formData,  // Gửi dữ liệu qua FormData
-        contentType: false,  // Đặt là false vì chúng ta không muốn jQuery tự động gán kiểu content-type
-        processData: false, 
-        success: function (response) {
-            alert('Đã nâng cấp người dùng thành nhân viên');
-        },
-        error: function () {
-            alert('Có lỗi xảy ra khi cập nhật role người dùng.');
+            if (!confirmChange) {
+                // Nếu người dùng không xác nhận, bỏ chọn checkbox
+                $(this).prop('checked', false);
+            }
         }
     });
 
-    // Gửi yêu cầu cập nhật thông tin người dùng
-    $.ajax({
-        url: `http://localhost:8080/api/loginAuth/updateUser/${userId}`,
-        type: 'PUT',
-        data: JSON.stringify(updatedUser),
-        contentType: 'application/json',
-        success: function (response) {
-            alert('Cập nhật thông tin người dùng thành công!');
-            $('#editUserModal').modal('hide');
-            loadUserData();  // Tải lại dữ liệu người dùng
-        },
-        error: function () {
-            alert('Có lỗi xảy ra khi cập nhật thông tin người dùng.');
-        }
-    });
-});
+    // Khi nhấn nút "Lưu thay đổi"
+    $('#saveChangesButton').on('click', function () {
+        const userId = $('#id').val();  // Lấy ID người dùng từ modal
+        const isRoleChecked = $('#roleToggle').prop('checked'); // Kiểm tra trạng thái checkbox
+        const role = isRoleChecked ? "nhân viên" : null; // Chỉ gán giá trị nếu checkbox được chọn
 
-        $('#closeButton').on('click', function () {
-            $('#editUserModal').modal('hide');
-            // });
+        // const userId = $('#id').val();  // Retrieve the user ID from the modal
+        // var role = $("#roleToggle").prop("checked") ? "nhân viên" : "";  // Nếu checkbox được bật, gán giá trị "nhân viên", nếu không thì bỏ qua
+
+        // Xác nhận lần cuối khi bấm Lưu
+        var confirmSave = confirm('Bạn có chắc chắn muốn lưu thay đổi?');
+
+        if (!confirmSave) {
+            return;  // Nếu người dùng không xác nhận, không thực hiện hành động lưu
+        }
+
+        const updatedUser = {
+            hoTen: $('#hoTen').val(),
+            namSinh: $('#namSinh').val(),
+            diaChi: $('#diaChi').val(),
+            email: $('#email').val(),
+            sdt: $('#sdt').val(),
+            maNguoiDung: $('#maNguoiDung').val(),  // Include maNguoiDung if needed
+        };
+
+        // // Gửi yêu cầu cập nhật role
+        // var formData = new FormData();
+        // formData.append("role", role);
+
+
+        // Gửi yêu cầu cập nhật thông tin người dùng
+        $.ajax({
+            url: `http://localhost:8080/api/loginAuth/updateUser/${userId}`,
+            type: 'PUT',
+            data: JSON.stringify(updatedUser),
+            contentType: 'application/json',
+            success: function (response) {
+                alert('Cập nhật thông tin người dùng thành công!');
+                $('#editUserModal').modal('hide');
+                loadUserData();  // Tải lại dữ liệu người dùng
+
+                if (isRoleChecked) {
+                    var formData = new FormData();
+                    formData.append("role", role);
+                }
+                $.ajax({
+                    url: `http://localhost:8080/api/loginAuth/updateRole/${userId}`,  // Gửi yêu cầu tới API updateRole
+                    type: 'PUT',
+                    data: formData,  // Gửi dữ liệu qua FormData
+                    contentType: false,  // Đặt là false vì chúng ta không muốn jQuery tự động gán kiểu content-type
+                    processData: false,
+                    success: function (response) {
+                        alert('Đã nâng cấp người dùng thành nhân viên');
+                    },
+                    error: function () {
+                        // alert('Có lỗi xảy ra khi cập nhật role người dùng.');
+                    }
+                });
+            },
+            error: function () {
+                alert('Có lỗi xảy ra khi cập nhật thông tin người dùng.');
+            }
         });
+    });
+
+    $('#closeButton').on('click', function () {
+        $('#editUserModal').modal('hide');
+        // });
+    });
 });

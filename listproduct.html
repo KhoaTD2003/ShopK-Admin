@@ -38,7 +38,7 @@
     <link href="assets/css/master.css" rel="stylesheet">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.3.2/uuid.min.js"></script> <!-- Thêm thư viện UUID -->
-<!-- 
+    <!-- 
     <style>
         #addBrandModal {
     z-index: 9999; /* Tăng z-index để đảm bảo nó ở trên cùng */
@@ -64,10 +64,15 @@
                         <h3> Danh Sách Sản Phẩm
                             <!-- <a href="roles.html" class="btn btn-sm btn-outline-primary float-end"><i
                                     class="fas fa-user-shield"></i> Roles</a> -->
+                           
                             <button type="button" class="btn btn-sm btn-outline-primary float-end" data-toggle="modal"
                                 data-target="#addProductModal" onclick="loadProductAttributes()">
                                 Thêm Sản Phẩm
                             </button>
+                            <div class="search-bar">
+                                <input type="text" id="searchKeyword" class="form-control" placeholder="Nhập tên sản phẩm để tìm kiếm">
+                            </div>
+                            
                         </h3>
                     </div>
                     <div class="box box-primary">
@@ -95,7 +100,7 @@
                                     </thead>
                                 </thead>
                                 <tbody id="productsTableBody">
-                                    
+
                                     <div class="modal fade" id="editProductModal" tabindex="-1" role="dialog"
                                         aria-labelledby="editProductModalLabel" aria-hidden="true">
                                         <div class="modal-dialog" role="document">
@@ -104,7 +109,7 @@
                                                     <h5 class="modal-title" id="editProductModalLabel">Update
                                                         Sản Phẩm</h5>
                                                     <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
+                                                        aria-label="Close" id="close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
@@ -144,8 +149,7 @@
                                                                         <option value="">Chọn thương hiệu
                                                                         </option>
                                                                     </select>
-                                                                    <span id="brandError"
-                                                                        class="text-danger"></span>
+                                                                    <span id="brandError" class="text-danger"></span>
                                                                     <!-- Hiển thị lỗi tại đây -->
                                                                     <!-- <div class="input-group-append">
                                                                         <button class="btn btn-outline-secondary"
@@ -365,7 +369,9 @@
                                                                     </div> -->
 
                                                                     <div class="input-group-append">
-                                                                        <button class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#addBrandModal">+</button>
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" data-toggle="modal"
+                                                                            data-target="#addBrandModal">+</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -379,7 +385,9 @@
                                                                     <span id="mausacError" class="text-danger"></span>
                                                                     <!-- Hiển thị lỗi tại đây -->
                                                                     <div class="input-group-append">
-                                                                        <button class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#addColorModal">+</button>
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" data-toggle="modal"
+                                                                            data-target="#addColorModal">+</button>
                                                                     </div>
 
                                                                 </div>
@@ -398,7 +406,9 @@
                                                                     <span id="chatlieuError" class="text-danger"></span>
                                                                     <!-- Hiển thị lỗi tại đây -->
                                                                     <div class="input-group-append">
-                                                                        <button class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#addMaterialModal">+</button>
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" data-toggle="modal"
+                                                                            data-target="#addMaterialModal">+</button>
                                                                     </div>
 
                                                                 </div>
@@ -414,7 +424,9 @@
                                                                     <span id="xuatxuError" class="text-danger"></span>
                                                                     <!-- Hiển thị lỗi tại đây -->
                                                                     <div class="input-group-append">
-                                                                        <button class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#addOriginModal">+</button>
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" data-toggle="modal"
+                                                                            data-target="#addOriginModal">+</button>
                                                                     </div>
 
                                                                 </div>
@@ -433,7 +445,9 @@
                                                                     <span id="theloaiError" class="text-danger"></span>
                                                                     <!-- Hiển thị lỗi tại đây -->
                                                                     <div class="input-group-append">
-                                                                        <button class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#addCategoryModal">+</button>
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" data-toggle="modal"
+                                                                            data-target="#addCategoryModal">+</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -448,7 +462,9 @@
                                                                     <span id="kichcoError" class="text-danger"></span>
                                                                     <!-- Hiển thị lỗi tại đây -->
                                                                     <div class="input-group-append">
-                                                                        <button class="btn btn-outline-secondary" type="button" data-toggle="modal" data-target="#addSizeModal">+</button>
+                                                                        <button class="btn btn-outline-secondary"
+                                                                            type="button" data-toggle="modal"
+                                                                            data-target="#addSizeModal">+</button>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -494,7 +510,8 @@
                                                         <!-- Trạng thái -->
                                                         <div class="form-group">
                                                             <label for="status">Trạng thái</label>
-                                                            <select class="form-control" id="trangthai" name="trangThai">
+                                                            <select class="form-control" id="trangthai"
+                                                                name="trangThai">
                                                                 <option value="true">Kích hoạt</option>
                                                                 <option value="false">Tắt</option>
                                                             </select>
@@ -527,230 +544,241 @@
             </div>
         </div>
 
-<!-- Modal Thêm Thương Hiệu -->
-<div class="modal fade" id="addBrandModal" tabindex="-1" role="dialog" aria-labelledby="addBrandModalLabel" aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addBrandModalLabel">Thêm Mới</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addBrandForm">
-                    <div class="form-group">
-                        <label for="brandCode" hidden>Mã Thương Hiệu</label>
-                        <input type="text" class="form-control" id="brandCode" name="brandCode" required hidden>
+        <!-- Modal Thêm Thương Hiệu -->
+        <div class="modal fade" id="addBrandModal" tabindex="-1" role="dialog" aria-labelledby="addBrandModalLabel"
+            aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addBrandModalLabel">Thêm Mới</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
+                        <form id="addBrandForm">
+                            <div class="form-group">
+                                <label for="brandCode" hidden>Mã Thương Hiệu</label>
+                                <input type="text" class="form-control" id="brandCode" name="brandCode" required hidden>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="brandName">Tên Thương Hiệu</label>
-                        <input type="text" class="form-control" id="brandName" name="brandName" required>
-                        <span id="nameError" class="text-danger"></span>
+                            <div class="form-group">
+                                <label for="brandName">Tên Thương Hiệu</label>
+                                <input type="text" class="form-control" id="brandName" name="brandName" required>
+                                <span id="nameError" class="text-danger"></span>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" id="saveBrandBtn">Lưu </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="saveBrandBtn">Lưu </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Modal Thêm màu -->
-<div class="modal fade" id="addColorModal" tabindex="-1" role="dialog" aria-labelledby="addColorModalLabel" aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addColorModalModalLabel">Thêm Mới</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addColorForm">
-                    <div class="form-group">
-                        <label for="colorCode" hidden>Mã Thương Hiệu</label>
-                        <input type="text" class="form-control" id="colorCode" name="colorCode" required hidden>
+        <!-- Modal Thêm màu -->
+        <div class="modal fade" id="addColorModal" tabindex="-1" role="dialog" aria-labelledby="addColorModalLabel"
+            aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addColorModalModalLabel">Thêm Mới</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
+                        <form id="addColorForm">
+                            <div class="form-group">
+                                <label for="colorCode" hidden>Mã Thương Hiệu</label>
+                                <input type="text" class="form-control" id="colorCode" name="colorCode" required hidden>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="colorName">Tên Màu Sắc</label>
-                        <input type="text" class="form-control" id="colorName" name="colorName" required>
-                        <span id="nameColorError" class="text-danger"></span>
+                            <div class="form-group">
+                                <label for="colorName">Tên Màu Sắc</label>
+                                <input type="text" class="form-control" id="colorName" name="colorName" required>
+                                <span id="nameColorError" class="text-danger"></span>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" id="saveColorBtn">Lưu </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="saveColorBtn">Lưu </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Modal Thêm chất liệu -->
-<div class="modal fade" id="addMaterialModal" tabindex="-1" role="dialog" aria-labelledby="addMaterialModalLabel" aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addMaterialModalModalLabel">Thêm Mới</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addMaterialForm">
-                    <div class="form-group">
-                        <label for="materialCode" hidden>Mã </label>
-                        <input type="text" class="form-control" id="materialCode" name="materialCode" required hidden>
+        <!-- Modal Thêm chất liệu -->
+        <div class="modal fade" id="addMaterialModal" tabindex="-1" role="dialog"
+            aria-labelledby="addMaterialModalLabel" aria-hidden="true"
+            style="width: 500px; margin-left: 600px; padding-top: 30px;">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addMaterialModalModalLabel">Thêm Mới</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
+                        <form id="addMaterialForm">
+                            <div class="form-group">
+                                <label for="materialCode" hidden>Mã </label>
+                                <input type="text" class="form-control" id="materialCode" name="materialCode" required
+                                    hidden>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="materialName">Tên Chất Liệu</label>
-                        <input type="text" class="form-control" id="materialName" name="materialName" required>
-                        <span id="nameMaterialError" class="text-danger"></span>
+                            <div class="form-group">
+                                <label for="materialName">Tên Chất Liệu</label>
+                                <input type="text" class="form-control" id="materialName" name="materialName" required>
+                                <span id="nameMaterialError" class="text-danger"></span>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" id="saveMaterialBtn">Lưu </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="saveMaterialBtn">Lưu </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Modal Thêm xUất xứ -->
+        <!-- Modal Thêm xUất xứ -->
 
-<div class="modal fade" id="addOriginModal" tabindex="-1" role="dialog" aria-labelledby="addOriginModalLabel" aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addOriginModalModalLabel">Thêm Mới</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addOriginForm">
-                    <div class="form-group">
-                        <label for="originCode" hidden>Mã</label>
-                        <input type="text" class="form-control" id="originCode" name="originCode" required hidden>
+        <div class="modal fade" id="addOriginModal" tabindex="-1" role="dialog" aria-labelledby="addOriginModalLabel"
+            aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addOriginModalModalLabel">Thêm Mới</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
+                        <form id="addOriginForm">
+                            <div class="form-group">
+                                <label for="originCode" hidden>Mã</label>
+                                <input type="text" class="form-control" id="originCode" name="originCode" required
+                                    hidden>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="originName">Tên Xuất Xứ</label>
-                        <input type="text" class="form-control" id="originName" name="originName" required>
-                        <span id="nameOriginError" class="text-danger"></span>
+                            <div class="form-group">
+                                <label for="originName">Tên Xuất Xứ</label>
+                                <input type="text" class="form-control" id="originName" name="originName" required>
+                                <span id="nameOriginError" class="text-danger"></span>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" id="saveOriginBtn">Lưu </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="saveOriginBtn">Lưu </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<!-- Modal Thêm thể loại-->
-<div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog" aria-labelledby="addCategoryModalLabel" aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addCategoryModalModalLabel">Thêm Mới</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addCategoryForm">
-                    <div class="form-group">
-                        <label for="categoryCode" hidden>Mã </label>
-                        <input type="text" class="form-control" id="categoryCode" name="categoryCode" required hidden>
+        <!-- Modal Thêm thể loại-->
+        <div class="modal fade" id="addCategoryModal" tabindex="-1" role="dialog"
+            aria-labelledby="addCategoryModalLabel" aria-hidden="true"
+            style="width: 500px; margin-left: 600px; padding-top: 30px;">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addCategoryModalModalLabel">Thêm Mới</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
+                        <form id="addCategoryForm">
+                            <div class="form-group">
+                                <label for="categoryCode" hidden>Mã </label>
+                                <input type="text" class="form-control" id="categoryCode" name="categoryCode" required
+                                    hidden>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="categoryName">Tên Thể Loại</label>
-                        <input type="text" class="form-control" id="categoryName" name="categoryName" required>
-                        <span id="nameCategoryError" class="text-danger"></span>
+                            <div class="form-group">
+                                <label for="categoryName">Tên Thể Loại</label>
+                                <input type="text" class="form-control" id="categoryName" name="categoryName" required>
+                                <span id="nameCategoryError" class="text-danger"></span>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" id="saveCategoryBtn">Lưu </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="saveCategoryBtn">Lưu </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
 
-<!-- Modal Thêm size-->
-<div class="modal fade" id="addSizeModal" tabindex="-1" role="dialog" aria-labelledby="addSizeModalLabel" aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
-    <div class="modal-dialog modal-sm" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addSizeModalModalLabel">Thêm Mới</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="addSizeForm">
-                    <div class="form-group">
-                        <label for="sizeCode" hidden>Mã</label>
-                        <input type="text" class="form-control" id="sizeCode" name="sizeCode" required hidden>
+        <!-- Modal Thêm size-->
+        <div class="modal fade" id="addSizeModal" tabindex="-1" role="dialog" aria-labelledby="addSizeModalLabel"
+            aria-hidden="true" style="width: 500px; margin-left: 600px; padding-top: 30px;">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addSizeModalModalLabel">Thêm Mới</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
+                    <div class="modal-body">
+                        <form id="addSizeForm">
+                            <div class="form-group">
+                                <label for="sizeCode" hidden>Mã</label>
+                                <input type="text" class="form-control" id="sizeCode" name="sizeCode" required hidden>
+                            </div>
 
-                    <div class="form-group">
-                        <label for="sizeName">Size</label>
-                        <input type="text" class="form-control" id="sizeName" name="sizeName" required>
-                        <span id="nameSizeError" class="text-danger"></span>
+                            <div class="form-group">
+                                <label for="sizeName">Size</label>
+                                <input type="text" class="form-control" id="sizeName" name="sizeName" required>
+                                <span id="nameSizeError" class="text-danger"></span>
+                            </div>
+                        </form>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
-                <button type="button" class="btn btn-primary" id="saveSizeBtn">Lưu </button>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                        <button type="button" class="btn btn-primary" id="saveSizeBtn">Lưu </button>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
 
 
-    <script src="assets/vendor/jquery/jquery.min.js"></script>
-    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/vendor/datatables/datatables.min.js"></script>
-    <script src="assets/js/initiate-datatables.js"></script>
-    <script src="assets/js/script.js"></script>
-    <script src="assets/js/auth.js"></script>
-    <!-- <script src="assets/js/products/brand.js"></script> -->
-         <!-- <script src="assets/js/products/add.js"></script> -->
+        <script src="assets/vendor/jquery/jquery.min.js"></script>
+        <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="assets/vendor/datatables/datatables.min.js"></script>
+        <script src="assets/js/initiate-datatables.js"></script>
+        <script src="assets/js/script.js"></script>
+        <script src="assets/js/auth.js"></script>
+        <!-- <script src="assets/js/products/brand.js"></script> -->
+        <!-- <script src="assets/js/products/add.js"></script> -->
 
-    <script src="assets/js/products/listproduct.js"></script>
+        <script src="assets/js/products/listproduct.js"></script>
 
-    <script>
-    
-        // Hàm kiểm tra trạng thái đăng nhập và chuyển hướng nếu chưa đăng nhập
-        function checkLogin() {
-            const user = localStorage.getItem('user');  // Lấy thông tin người dùng từ localStorage
+        <script>
 
-            if (!user) {
-                // Nếu không có thông tin người dùng, chuyển hướng về trang login
-                window.location.href = "/login.html";
+            // Hàm kiểm tra trạng thái đăng nhập và chuyển hướng nếu chưa đăng nhập
+            function checkLogin() {
+                const user = localStorage.getItem('user');  // Lấy thông tin người dùng từ localStorage
+
+                if (!user) {
+                    // Nếu không có thông tin người dùng, chuyển hướng về trang login
+                    window.location.href = "/login.html";
+                }
             }
-        }
 
-        // Kiểm tra khi trang users.html được tải
-        $(document).ready(function () {
-            checkLogin(); // Kiểm tra trạng thái đăng nhập ngay khi trang load
-        });
-    </script>
+            // Kiểm tra khi trang users.html được tải
+            $(document).ready(function () {
+                checkLogin(); // Kiểm tra trạng thái đăng nhập ngay khi trang load
+            });
+        </script>
 </body>
 
 </html>

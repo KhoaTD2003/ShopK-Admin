@@ -2,51 +2,101 @@ $(document).ready(function () {
     // const role = localStorage.getItem('role');  // Lấy role từ localStorage
 
     // Hàm tải dữ liệu người dùng từ API
-    function loadProductData(pageNumber = 0) {
+    // function loadProductData(pageNumber = 0) {
+    //     $.ajax({
+    //         url: `http://localhost:8080/api/loginAuth/product?page=${pageNumber}`,
+    //         type: 'GET',
+    //         success: function (data) {
+    //             let tableRows = '';
+    //             data.content.forEach(function (product, index) {
+    //                 tableRows += `
+
+    //                <tr>
+    //                     <td>${index + 1}</td> <!-- Mã sản phẩm -->
+    //                     <td>${product.maSP}</td> <!-- Mã sản phẩm -->
+    //                     <td>${product.tenSP}</td> <!-- Tên sản phẩm -->
+    //                     <td>${product.thuongHieuTen}</td> <!-- Tên thương hiệu -->
+    //                     <td>${product.mauSacTen}</td> <!-- Tên màu sắc -->
+    //                     <td>${product.theLoaiTen}</td> <!-- Tên thể loại -->
+    //                     <td>${product.xuatXuTen}</td> <!-- Tên xuất xứ -->
+    //                     <td>${product.chatLieuTen}</td> <!-- Tên chất liệu -->
+    //                     <td>${product.sizeTen}</td> <!-- Tên size -->
+    //                     <td>${product.soLuongTon}</td> <!-- Số lượng tồn -->
+    //                     <td>${formatCurrency(product.giaBan)}</td> <!-- Số lượng tồn -->
+    //                     <td>${product.moTa}</td> <!-- Mô tả sản phẩm -->
+    //                     <td><img src="/assets/${product.anh}" width="50" height="50" /></td>
+    //                     <td>
+    //                         <!-- Trạng thái sản phẩm: ON/OFF -->
+    //                         <i class="fas fa-toggle-${product.trangThai ? 'on' : 'off'} status-toggle" data-id="${product.id}" style="font-size: 24px; color: ${product.trangThai ? 'green' : 'gray'};"></i>
+    //                     </td>
+    //                     <td class="text-end">
+    //                         <button class="btn btn-outline-info btn-rounded" data-id="${product.id}"><i class="fas fa-pen"></i> Edit</button>
+    //                         <button class="btn btn-outline-danger btn-rounded" data-id="${product.id}"><i class="fas fa-trash"></i> Delete</button>
+    //                     </td>
+    //                 </tr>
+    //                 `;
+    //             });
+    //             $('#productsTableBody').html(tableRows);
+    //             registerStatusToggle();
+    //             renderPagination(data.totalPages, pageNumber);
+
+    //             // <td>${product.id}</td> <!-- ID sản phẩm -->
+    //         },
+    //         error: function (xhr, status, error) {
+    //             alert('Có lỗi xảy ra khi tải dữ liệu sản phẩm.');
+    //         }
+    //     });
+    // }
+
+    function loadProductData(pageNumber = 0, searchKeyword = '') {
         $.ajax({
-            url: `http://localhost:8080/api/loginAuth/product?page=${pageNumber}`,
+            url: `http://localhost:8080/api/loginAuth/product`,
             type: 'GET',
+            data: {
+                page: pageNumber,      // Số trang
+                tenSP: searchKeyword  // Từ khóa tìm kiếm (nếu có)
+            },
             success: function (data) {
                 let tableRows = '';
                 data.content.forEach(function (product, index) {
                     tableRows += `
-                    
-                   <tr>
-                        <td>${index + 1}</td> <!-- Mã sản phẩm -->
-                        <td>${product.maSP}</td> <!-- Mã sản phẩm -->
-                        <td>${product.tenSP}</td> <!-- Tên sản phẩm -->
-                        <td>${product.thuongHieuTen}</td> <!-- Tên thương hiệu -->
-                        <td>${product.mauSacTen}</td> <!-- Tên màu sắc -->
-                        <td>${product.theLoaiTen}</td> <!-- Tên thể loại -->
-                        <td>${product.xuatXuTen}</td> <!-- Tên xuất xứ -->
-                        <td>${product.chatLieuTen}</td> <!-- Tên chất liệu -->
-                        <td>${product.sizeTen}</td> <!-- Tên size -->
-                        <td>${product.soLuongTon}</td> <!-- Số lượng tồn -->
-                        <td>${formatCurrency(product.giaBan)}</td> <!-- Số lượng tồn -->
-                        <td>${product.moTa}</td> <!-- Mô tả sản phẩm -->
-                        <td><img src="/assets/${product.anh}" width="50" height="50" /></td>
-                        <td>
-                            <!-- Trạng thái sản phẩm: ON/OFF -->
-                            <i class="fas fa-toggle-${product.trangThai ? 'on' : 'off'} status-toggle" data-id="${product.id}" style="font-size: 24px; color: ${product.trangThai ? 'green' : 'gray'};"></i>
-                        </td>
-                        <td class="text-end">
-                            <button class="btn btn-outline-info btn-rounded" data-id="${product.id}"><i class="fas fa-pen"></i> Edit</button>
-                            <button class="btn btn-outline-danger btn-rounded" data-id="${product.id}"><i class="fas fa-trash"></i> Delete</button>
-                        </td>
-                    </tr>
+                       <tr>
+                            <td>${index + 1}</td> <!-- STT -->
+                            <td>${product.maSP}</td> <!-- Mã sản phẩm -->
+                            <td>${product.tenSP}</td> <!-- Tên sản phẩm -->
+                            <td>${product.thuongHieuTen}</td> <!-- Tên thương hiệu -->
+                            <td>${product.mauSacTen}</td> <!-- Tên màu sắc -->
+                            <td>${product.theLoaiTen}</td> <!-- Tên thể loại -->
+                            <td>${product.xuatXuTen}</td> <!-- Tên xuất xứ -->
+                            <td>${product.chatLieuTen}</td> <!-- Tên chất liệu -->
+                            <td>${product.sizeTen}</td> <!-- Tên size -->
+                            <td>${product.soLuongTon}</td> <!-- Số lượng tồn -->
+                            <td>${formatCurrency(product.giaBan)}</td> <!-- Giá bán -->
+                            <td>${product.moTa}</td> <!-- Mô tả sản phẩm -->
+                            <td><img src="/assets/${product.anh}" width="50" height="50" /></td> <!-- Ảnh -->
+                            <td>
+                                <!-- Trạng thái sản phẩm: ON/OFF -->
+                                <i class="fas fa-toggle-${product.trangThai ? 'on' : 'off'} status-toggle" data-id="${product.id}" style="font-size: 24px; color: ${product.trangThai ? 'green' : 'gray'};"></i>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-outline-info btn-rounded" data-id="${product.id}"><i class="fas fa-pen"></i> Edit</button>
+                                <button class="btn btn-outline-danger btn-rounded" data-id="${product.id}"><i class="fas fa-trash"></i> Delete</button>
+                            </td>
+                        </tr>
                     `;
                 });
-                $('#productsTableBody').html(tableRows);
-                registerStatusToggle();
-                renderPagination(data.totalPages, pageNumber);
 
-                // <td>${product.id}</td> <!-- ID sản phẩm -->
+                $('#productsTableBody').html(tableRows); // Cập nhật bảng sản phẩm
+                registerStatusToggle(); // Đăng ký sự kiện toggle trạng thái
+                renderPagination(data.totalPages, pageNumber); // Cập nhật phân trang
             },
             error: function (xhr, status, error) {
                 alert('Có lỗi xảy ra khi tải dữ liệu sản phẩm.');
             }
         });
     }
+
+
 
     function formatCurrency(amount) {
         if (typeof amount !== 'number') amount = Number(amount); // Đảm bảo đầu vào là số
@@ -75,7 +125,10 @@ $(document).ready(function () {
     // Tải dữ liệu sản phẩm lần đầu tiên
     loadProductData();
 
-
+    $('#searchKeyword').on('input', function () {
+        const searchKeyword = $(this).val(); // Lấy từ khóa người dùng nhập
+        loadProductData(0, searchKeyword);   // Gọi hàm loadProductData với từ khóa tìm kiếm
+    });
 
     // Hàm đăng ký sự kiện click cho các icon trạng thái
     function registerStatusToggle() {
@@ -227,28 +280,65 @@ $(document).ready(function () {
 
     });
 
+
+    function appendOptions(selectId, items, selectedValue) {
+        let selectElement = $(selectId);
+        selectElement.empty();  // Xóa tất cả các option cũ
+        selectElement.append('<option value="">Chọn</option>'); // Thêm option mặc định
+
+        // Thêm các option vào select
+        items.forEach(item => {
+            let isSelected = item.id === selectedValue ? 'selected' : ''; // Kiểm tra xem có phải là giá trị đã chọn không
+            selectElement.append(`<option value="${item.id}" ${isSelected}>${item.ten}</option>`);
+        });
+    }
+
+
+
     function openEditForm(productId) {
         // Fetch product data by ID
         $.ajax({
             url: `http://localhost:8080/api/products/${productId}`,
             method: 'GET',
             success: function (product) {
+                console.log(product);
                 // Populate form fields
                 $('#productId').val(product.id);
                 $('#productCode').val(product.maSP);
                 $('#productName').val(product.tenSP);
-                $('#brand').val(product.thuongHieuId);
-                $('#color').val(product.mauSacId);
-                $('#material').val(product.chatLieuId);
-                $('#origin').val(product.xuatXuId);
-                $('#category').val(product.theLoaiId);
-                $('#size').val(product.sizeId);
+                // $('#brand').val(product.thuongHieuId.ten);
+                // $('#color').val(product.mauSacId);
+                // $('#material').val(product.chatLieuId);
+                // $('#origin').val(product.xuatXuId);
+                // $('#category').val(product.theLoaiId);
+                // $('#size').val(product.sizeId);
                 $('#price').val(product.giaBan);
                 $('#stock').val(product.soLuongTon);
                 $('#description').val(product.moTa);
                 $('#imagePath').val(product.anh); // Đường dẫn ảnh
 
                 $('#status').prop('checked', product.trangThai);
+                $.ajax({
+                    url: 'http://localhost:8080/api/products/attributes?brands=true&colors=true&materials=true&origins=true&categories=true&sizes=true',
+                    method: 'GET',
+                    success: function (response) {
+                        console.log(response);  // Kiểm tra dữ liệu trả về
+
+                        // Kiểm tra lại dữ liệu sản phẩm
+                        console.log("Product data:", product);
+
+                        // Cập nhật các select options với giá trị đã chọn
+                        appendOptions('#brand', response.brands, product.thuongHieu.id);  // Truyền id thương hiệu đã chọn
+                        appendOptions('#color', response.colors, product.mauSac.id);      // Truyền id màu sắc đã chọn
+                        appendOptions('#material', response.materials, product.chatLieu.id);  // Truyền id chất liệu đã chọn
+                        appendOptions('#origin', response.origins, product.xuatXu.id);      // Truyền id xuất xứ đã chọn
+                        appendOptions('#category', response.categories, product.theLoai.id); // Truyền id thể loại đã chọn
+                        appendOptions('#size', response.sizes, product.size.id);            // Truyền id size đã chọn
+                    },
+                    error: function (err) {
+                        console.error("Lỗi khi gọi API:", err);
+                    }
+                });
 
                 // Show the edit modal
                 $('#editProductModal').modal('show');
@@ -360,7 +450,7 @@ $(document).ready(function () {
         });
     });
 
-    $('#closeButton').on('click', function () {
+    $('#closeButton,  #close').on('click', function () {
         $('#editProductModal').modal('hide');
         // });
     });

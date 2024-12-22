@@ -1,4 +1,5 @@
 $(document).ready(function () {
+   
 
     function loadInvoiceData() {
         $.ajax({
@@ -7,8 +8,17 @@ $(document).ready(function () {
             success: function (data) {
                 // Xử lý dữ liệu trả về từ API
                 let tableRows = '';
-                data.forEach(function (invoice, index) {
-                    tableRows += `
+                if (data.length === 0) {
+                    // Thêm thông báo khi không có hóa đơn nào
+                    tableRows = `
+                        <tr>
+                            <td colspan="11" class="text-center" style="font-weight: bold;
+                                 color: #555;">Không có hóa đơn nào</td>                
+                        </tr>
+                    `;
+                } else {
+                    data.forEach(function (invoice, index) {
+                        tableRows += `
                     <tr>
                         <td>${index + 1}</td> <!-- Thêm STT -->
                         <td>${invoice.maHoaDon}</td> <!-- Mã Hóa đơn -->
@@ -20,8 +30,8 @@ $(document).ready(function () {
                         <td>${formatCurrency(invoice.tienThu)}</td> <!-- Tiền thu -->
                         <td>
                              ${invoice.ghiChu === 'Online'
-                            ? '<i class="fas fa-globe" style="color: blue;"></i> Online'
-                            : '<i class="fas fa-store" style="color: green;"></i> In-Store'}
+                                ? '<i class="fas fa-globe" style="color: blue;"></i> Online'
+                                : '<i class="fas fa-store" style="color: green;"></i> In-Store'}
                         </td>
 
                         <td>${invoice.trangThai || 'N/A'}</td> <!-- Trạng thái tài khoản -->
@@ -38,7 +48,9 @@ $(document).ready(function () {
                         </td>
                     </tr>
                 `;
-                });
+                    });
+                }
+
                 $('#invoiceTableBody').html(tableRows);
                 registerEdit();
 
@@ -46,6 +58,7 @@ $(document).ready(function () {
             error: function (xhr, status, error) {
                 alert('Có lỗi xảy ra khi tải dữ liệu hóa đơn.');
             }
+
         });
     }
     // <td>${invoice.id}</td> <!-- ID Hóa đơn -->

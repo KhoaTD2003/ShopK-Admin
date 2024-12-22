@@ -13,18 +13,22 @@
     <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/vendor/datatables/datatables.min.css" rel="stylesheet">
     <link href="assets/css/master.css" rel="stylesheet">
-    
+
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
     <style>
         body {
             background-color: #f8f9fa;
         }
+
         .card {
             border: 1px solid #ddd;
         }
-        .cart-table td, .cart-table th {
+
+        .cart-table td,
+        .cart-table th {
             vertical-align: middle;
         }
+
         .pending-invoice .card {
             flex: 1;
             margin: 10px;
@@ -52,25 +56,27 @@
                         <h5 class="mb-3">Danh sách sản phẩm</h5>
                         <input type="text" id="searchInput" placeholder="Tìm kiếm sản phẩm" class="form-control mb-3">
                         <div id="productList" class="row"> </div>
-                        <div id="paginationContainer" class="d-flex justify-content-center mt-4">111</div>
+                        <div id="paginationContainer" class="d-flex justify-content-center mt-4"></div>
 
                     </div>
-        
+
                     <!-- Cột phải: Hóa đơn và giỏ hàng -->
                     <div class="col-md-5">
-                        <h5 class="mb-3">Hóa đơn</h5>
+                        <h3 class="mb-3">Hóa đơn</h3>
                         <!-- Thông tin khách hàng -->
                         <form id="customerForm">
                             <div class="form-group">
                                 <label for="customerName">Tên khách hàng</label>
-                                <input type="text" class="form-control" id="customerName" placeholder="Nhập tên khách hàng">
+                                <input type="text" class="form-control" id="customerName"
+                                    placeholder="Nhập tên khách hàng">
                             </div>
                             <div class="form-group">
                                 <label for="customerPhone">Số điện thoại</label>
-                                <input type="text" class="form-control" id="customerPhone" placeholder="Nhập số điện thoại">
+                                <input type="text" class="form-control" id="customerPhone"
+                                    placeholder="Nhập số điện thoại">
                             </div>
                         </form>
-        
+
                         <!-- Giỏ hàng -->
                         <table class="table cart-table">
                             <thead>
@@ -84,7 +90,7 @@
                             </thead>
                             <tbody id="cartItems"></tbody>
                         </table>
-        
+
                         <!-- Tổng tiền -->
                         <div class="mb-3">
                             Tổng tiền: <span id="totalAmount">0</span> VND
@@ -102,16 +108,41 @@
                         <div>
                             Tổng sau giảm: <span id="finalAmount">0</span> VND
                         </div>
-        
+
                         <!-- Nút chức năng -->
-                        <button class="btn btn-primary mt-2" id="createInvoice">Tạo hóa đơn</button>
+                        <button class="btn btn-primary mt-2" onclick="createInvoice()">Tạo hóa đơn</button>
                         <button class="btn btn-success mt-2" id="checkoutBtn">Thanh toán</button>
+                        <button class="btn btn-warning mt-2" id="showPendingInvoicesBtn">Xem hóa đơn chờ</button>
+
+
+                        <!-- Danh sách hóa đơn chờ -->
+                        <!-- <h5 class="mt-4">Hóa đơn chờ</h5>
+                        <div id="pendingInvoices" class="d-flex flex-wrap"></div> -->
+                        <!-- Form hiển thị danh sách hóa đơn chờ -->
+                        <div id="pendingInvoicesSection" style="display: none;">
+                            <h3>Danh Sách Hóa Đơn Chờ</h3>
+                            <table id="pendingInvoices" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Mã Hóa Đơn</th>
+                                        <th>Tên Khách Hàng</th>
+                                        <th>Số Điện Thoại</th>
+                                        <th>Thao Tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Các hóa đơn chờ sẽ được hiển thị ở đây -->
+                                </tbody>
+                            </table>
+                        </div>
+
                     </div>
+
                 </div>
-        
-                <!-- Danh sách hóa đơn chờ -->
-                <h5 class="mt-4">Hóa đơn chờ</h5>
-                <div id="pendingInvoices" class="d-flex flex-wrap"></div>
+
+
+
+
             </div>
         </div>
     </div>

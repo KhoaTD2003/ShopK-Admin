@@ -8,7 +8,7 @@
     'use strict';
 
     // Toggle sidebar on Menu button click
-  
+
 
     // Auto-hide sidebar on window resize if window size is small
     // $(window).on('resize', function () {
@@ -56,34 +56,65 @@
     });
 
     // Định nghĩa các tính năng của trang
-    function initPageFeatures() {
+    // function initPageFeatures() {
 
+    //     // Lấy thông tin người dùng từ localStorage
+    //     var user = getAuthUser();
+    //     console.log(user)
+    //     if (user) {
+    //         // Nếu đã đăng nhập, hiển thị tên tài khoản và nút đăng xuất
+    //         $(".login-auth").html(`<i class="fas fa-user"></i> ${user.tenTaiKhoan} <i style="font-size: .8em;" class="fas fa-caret-down"></i>`);
+    //         $(".logout-auth").hide(); // Hiển thị menu đăng xuất
+    //         $('#logoutBtn').on('click', logout); // Gán sự kiện click cho nút logout
+
+    //         $(".login-auth").on('click', function () {
+    //             $(".logout-auth").toggle(); // Toggle hiển thị menu "Đăng xuất"
+    //         });
+
+    //     } else {
+    //         // Nếu chưa đăng nhập, hiển thị Login và ẩn menu đăng xuất
+    //         $(".login-auth").html(`<i class="fas fa-user"></i> Login`);
+    //         $(".logout-auth").hide(); // Ẩn menu đăng xuất
+    //     }
+    //     $('#sidebarCollapse').on('click', function () {
+    //         $('#sidebar').toggleClass('active');
+    //         $('#body').toggleClass('active');
+    //     });
+    // }
+
+    function initPageFeatures() {
         // Lấy thông tin người dùng từ localStorage
         var user = getAuthUser();
-        console.log(user)
-        if (user) {
-            // Nếu đã đăng nhập, hiển thị tên tài khoản và nút đăng xuất
-            $(".login-auth").html(`<i class="fas fa-user"></i> ${user.tenTaiKhoan} <i style="font-size: .8em;" class="fas fa-caret-down"></i>`);
-            $(".logout-auth").hide(); // Hiển thị menu đăng xuất
-            $('#logoutBtn').on('click', logout); // Gán sự kiện click cho nút logout
+        console.log(user);
 
-            $(".login-auth").on('click', function () {
-                $(".logout-auth").toggle(); // Toggle hiển thị menu "Đăng xuất"
+        if (user) {
+            // Nếu đã đăng nhập, hiển thị tên tài khoản trong menu
+            $(".login-auth").html(`Xin Chào ${user.tenTaiKhoan}!`);
+            $("#userMenuOptions").show(); // Hiển thị menu tùy chọn
+
+            $(document).on("click", "#logoutBtn", function (e) {
+                e.preventDefault();
+                logout(); // Xử lý đăng xuất
             });
 
         } else {
-            // Nếu chưa đăng nhập, hiển thị Login và ẩn menu đăng xuất
-            $(".login-auth").html(`<i class="fas fa-user"></i> Login`);
-            $(".logout-auth").hide(); // Ẩn menu đăng xuất
+            // Nếu chưa đăng nhập, hiển thị Login và ẩn menu tùy chọn
+            $("#login-auth").html();
+            $("#userMenuOptions").hide();
         }
-        $('#sidebarCollapse').on('click', function () {
-            $('#sidebar').toggleClass('active');
-            $('#body').toggleClass('active');
+
+        // Sự kiện toggle sidebar (nếu cần)
+        $("#sidebarCollapse").on("click", function () {
+            $("#sidebar").toggleClass("active");
+            $("#body").toggleClass("active");
         });
     }
 
+    
     // Hàm để xử lý đăng xuất
     function logout() {
+        console.log("Logout button clicked");
+
         const confirmLogout = confirm("Bạn có chắc chắn muốn đăng xuất?");
         if (confirmLogout) {
             localStorage.removeItem('user'); // Xóa thông tin người dùng khỏi localStorage
@@ -93,7 +124,8 @@
         } else {
             // Nếu người dùng hủy đăng xuất, không làm gì cả
             console.log("Đăng xuất bị hủy");
-        }  }
+        }
+    }
 
 
 

@@ -9,8 +9,8 @@ $(document).ready(function () {
                 data.content.forEach(function (discount, index) {
 
                     let now = (discount.ngayTao).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày bắt đầu
-                    let startDate =(discount.ngayBatDau).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày bắt đầu
-                    let endDate =(discount.ngayKetThuc).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày kết thúc
+                    let startDate = (discount.ngayBatDau).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày bắt đầu
+                    let endDate = (discount.ngayKetThuc).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày kết thúc
 
                     let giamGiaDisplay = discount.giamGia;
 
@@ -52,6 +52,7 @@ $(document).ready(function () {
                     `;
                 });
                 $('#discountTableBody').html(tableRows);
+                registerStatusToggle(); // Đăng ký sự kiện toggle trạng thái
                 renderPaginatio(data.totalPages, pageNumber);
 
 
@@ -62,7 +63,53 @@ $(document).ready(function () {
         });
     }
 
+    function registerStatusToggle() {
+        $('.status-toggle').click(function () {
+            var icon = $(this);  // Lưu đối tượng icon vào một biến
+            var id = icon.data('id');  // Lấy userId từ thuộc tính data-id
+            console.log("id giam gia:", id); // Kiểm tra giá trị của userId
 
+            var currentStatus = icon.hasClass('fa-toggle-on');  // Kiểm tra trạng thái hiện tại (đang bật hay tắt)
+            var newStatus = !currentStatus;  // Đảo trạng thái
+
+            if (!confirm(`Bạn có chắc chắn muốn ${newStatus ? 'bật' : 'tắt'} trạng thái của phiếu giảm giá này?`)) {
+                return;  // Nếu người dùng không xác nhận, dừng hành động
+            }
+
+            // Kiểm tra xem userId có phải là UUID hợp lệ không
+            if (!isValidUUID(id)) {
+                console.log(id);
+                alert("Mã sản phẩm không hợp lệ.");
+                return;
+            }
+
+            // Gửi yêu cầu PUT để cập nhật trạng thái
+            $.ajax({
+                url: `http://localhost:8080/api/giamgia/upStatusDiscount/${id}?trangThai=${newStatus}`,
+                type: 'PUT',
+                success: function (response) {
+                    // Cập nhật icon và màu sắc theo trạng thái mới
+                    if (newStatus) {
+                        icon.removeClass('fa-toggle-off')
+                            .addClass('fa-toggle-on')
+                            .css('color', 'green');
+                    } else {
+                        icon.removeClass('fa-toggle-on')
+                            .addClass('fa-toggle-off')
+                            .css('color', 'gray');
+                    }
+                    alert(response);
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText);
+                }
+            });
+        });
+    }
+    function isValidUUID(uuid) {
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        return uuidRegex.test(uuid);
+    }
     function renderPaginatio(totalPages, currentPage) {
         let paginationHtml = '';
         for (let i = 0; i < totalPages; i++) {
@@ -111,67 +158,159 @@ $(document).ready(function () {
         }
     }
 
-    // function openEditForm(Id) {
-    //     // Fetch product data by ID
-    //     $.ajax({
-    //         url: `http://localhost:8080/api/giamgia/discount/${Id}`,
-    //         method: 'GET',
-    //         success: function (discount) {
-    //             // Populate form fields
-    //             $('#id').val(discount.id);
-    //             $('#ma').val(discount.ma);
-    //             $('#ten').val(discount.ten);
-    //             $('#ngaytao').val(discount.ngayTao);
-    //             $('#ngaybatdau').val(discount.ngayBatDau);
-    //             $('#ngayketthuc').val(discount.ngayBatDau);
-    //             $('#loaigiam').val(discount.giamGia);
-    //             $('#solan').val(discount.soLansd);
+
+    // Hàm chuyển đổi ngày ISO 8601 (ví dụ: "2024-12-17T00:00:00.000+00:00") sang định dạng yyyy-MM-dd
+    function formatDateToISO(dateString) {
+        var date = new Date(dateString);  // Chuyển chuỗi ISO 8601 thành đối tượng Date
+        var year = date.getFullYear();
+        var month = (date.getMonth() + 1).toString().padStart(2, '0');  // Tháng (0-11), cộng 1 để trở thành tháng (1-12)
+        var day = date.getDate().toString().padStart(2, '0');  // Ngày (1-31)
+
+        return `${year}-${month}-${day}`;  // Trả về định dạng yyyy-MM-dd
+    }
+
+    // Hàm mở form chỉnh sửa mã giảm giá
+    function openEditForm(Id) {
+        // Gửi AJAX request để lấy dữ liệu mã giảm giá theo Id
+        $.ajax({
+            url: `http://localhost:8080/api/giamgia/${Id}`,  // API xóa người dùng
+            type: "GET",
+            success: function (data) {
+                console.log(data);
+                // Hiển thị dữ liệu trong form
+                $("#Id").val(data.id),
+                    $("#Code").val(data.ma); // Mã giảm giá
+                $("#Name").val(data.ten); // Tên giảm giá
+                var startDate = formatDateToISO(data.ngayBatDau);
+                var endDate = formatDateToISO(data.ngayKetThuc);
+                $("#stDate").val(startDate); // Ngày bắt đầu
+                $("#enDate").val(endDate); // Ngày kết thúc
+
+                // $("#stDate").val(data.ngayBatDau); // Ngày bắt đầu
+                // $("#enDate").val(data.ngayKetThuc); // Ngày kết thúc
+                $("#percentage").val(data.giamGia); // Giá trị giảm giá
+                $("#usLimit").val(data.soLansd); // Số lần sử dụng
+                $("#inValue").val(data.giaTriMin); // Giá trị tối thiểu
+                $("#tt").val(data.trangThai.toString()); // Trạng thái (true/false)
+
+                // Hiển thị modal chỉnh sửa
+                $("#editDiscountModal").modal("show");
+            },
+            error: function (xhr) {
+                // Xử lý lỗi nếu không tìm thấy mã giảm giá
+                if (xhr.status === 404) {
+                    alert("Không tìm thấy mã giảm giá.");
+                } else {
+                    alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+                }
+            }
+        });
+    }
 
 
-    //             // Show the edit modal
-    //             $('#editBrandModal').modal('show');
-    //         },
-    //         error: function (err) {
-    //             console.error("Failed to fetch product details:", err);
-    //             alert("Error loading product details!");
-    //         }
-    //     })
-    // }
 
-    // $('#updateBrandButton').click(function (event) {
-    //     if (confirm('Bạn có chắc chắn muốn sửa thương hiệu này?')) {
+    $('#editDiscountButton').click(function (event) {
+        if (confirm('Bạn có chắc chắn muốn sửa mã giảm giá này?')) {
+            event.preventDefault();
 
-    //     event.preventDefault();
+            const discountData = {
+                id: $("#Id").val(),
+                ma: $("#Code").val(),
+                ten: $("#Name").val(),
+                giamGia: $("#percentage").val(),
+                ngayBatDau: $("#stDate").val(),
+                ngayKetThuc: $("#enDate").val(),
+                soLansd: $("#usLimit").val(),
+                giaTriMin: $("#inValue").val(),
+                trangThai: $("#tt").val() === "true"
+            };
 
-    //     const code = $('#ma').val().trim();
-    //     const name = $('#ten').val().trim();
-    //     const id = $('#id').val();
+            var hasError = false;
 
-    //     if (!code || !name) {
-    //         $('#maError').text(!code ? 'Mã không được để trống' : '');
-    //         $('#tenError').text(!name ? 'Tên không được để trống' : '');
-    //         return;
-    //     }
+            // Kiểm tra các trường thông tin
+            if (discountData.ma === "") {
+                $("#maError").text("Mã giảm giá không được để trống.");
+                hasError = true;
+            } else {
+                $("#maError").text("");
+            }
 
-    //     $.ajax({
-    //         url: `http://localhost:8080/api/thuonghieu/${id}`,
-    //         method: 'PUT',
-    //         contentType: 'application/json',
-    //         data: JSON.stringify({ ma: code, ten: name }),
-    //         success: function () {
-    //             alert("Brand updated successfully!");
-    //             $('#editBrandModal').modal('hide');
-    //             loadBrand(); // Refresh brand list
-    //         },
-    //         error: function () {
-    //             alert("Error updating brand!");
-    //         }
-    //     });
-    // }
-    // });
+            if (discountData.ten === "") {
+                $("#tenError").text("Tên giảm giá không được để trống.");
+                hasError = true;
+            } else {
+                $("#tenError").text("");
+            }
 
-    $('#closeButton').on('click', function () {
-        $('#editBrandModal').modal('hide');
+            if (discountData.giamGia === "") {
+                $("#ggError").text("Giảm giá không được để trống.");
+                hasError = true;
+            } else {
+                $("#ggError").text("");
+            }
+
+            if (discountData.ngayBatDau === "") {
+                $("#stDateError").text("Bắt buộc chọn ngày");
+                hasError = true;
+            }
+
+            if (discountData.ngayKetThuc === "") {
+                $("#enDateError").text("Bắt buộc chọn ngày");
+                hasError = true;
+            }
+
+            if (!discountData.ngayBatDau || !discountData.ngayKetThuc || (discountData.ngayBatDau) > (discountData.ngayKetThuc)) {
+                alert('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.');
+                hasError = true;
+            }
+
+            if (discountData.soLansd <= 0) {
+                $("#LansdError").text("Số lần sử dụng phải lớn hơn 0.");
+                hasError = true;
+            } else {
+                $("#LansdError").text("");
+            }
+
+            if (discountData.giaTriMin <= 0) {
+                $("#ValueError").text("Giá trị tối thiểu phải lớn hơn 0.");
+                hasError = true;
+            } else {
+                $("#ValueError").text("");
+            }
+
+            if (hasError) {
+                return; // Dừng lại nếu có lỗi
+            }
+            console.log("Updating discount with ID: ", discountData.id);
+            // Gửi AJAX đến API
+            $.ajax({
+                url: `http://localhost:8080/api/giamgia/discount/${discountData.id}`, // Đảm bảo URL đúng
+                type: "PUT",
+                contentType: "application/json", // Gửi dữ liệu dưới dạng JSON
+                data: JSON.stringify(discountData), // Dữ liệu gửi đi dưới dạng JSON
+                success: function (response) {
+                    // Xử lý khi cập nhật thành công
+                    alert("Cập nhật mã giảm giá thành công!");
+                    $("#editDiscountModal").modal("hide");
+                    // Tải lại danh sách giảm giá (nếu có)
+                    loadDiscount();
+                },
+                error: function (xhr) {
+                    // Xử lý khi có lỗi
+                    if (xhr.status === 400) {
+                        alert("Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.");
+                    } else if (xhr.status === 404) {
+                        alert("Không tìm thấy mã giảm giá.");
+                    } else {
+                        alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+                    }
+                }
+            });
+        }
+    });
+
+    $('#editcloseButton, #close').on('click', function () {
+        $('#editDiscountModal').modal('hide');
         // });
     });
 
@@ -208,7 +347,7 @@ $(document).ready(function () {
         // } else {
         //     $('#minValueError').text('');
         // }
-    
+
         if (!code) {
             $('#codeError').text('Mã không được để trống');
             hasError = true;
@@ -304,5 +443,7 @@ $(document).ready(function () {
     });
 
 
+
 })
+
 

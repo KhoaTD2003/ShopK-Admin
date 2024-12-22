@@ -80,56 +80,113 @@
                                 </thead>
                                 <tbody id="discountTableBody">
 
-                                    <div class="modal fade" id="editBrandModal" tabindex="-1" role="dialog"
-                                        aria-labelledby="editBrandModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog" role="document">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="editBrandModalLabel">Update
-                                                        Thương Hiệu</h5>
-                                                    <button type="button" class="close" data-dismiss="modal"
-                                                        aria-label="Close">
-                                                        <span aria-hidden="true">&times;</span>
-                                                    </button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <form id="editBrandForm">
-                                                        <!-- Mã sản phẩm và Tên sản phẩm hiển thị trên cùng một dòng -->
-                                                        <input type="text" class="form-control" id="id" name="id"
-                                                            required readonly hidden>
-                                                        <div class="form-group row">
-                                                            <div class="col-md-6">
-                                                                <label for="productCode">Mã sản phẩm</label>
-                                                                <input type="text" class="form-control" id="ma"
-                                                                    name="ma" required
-                                                                    placeholder="Vui Lòng nhập đầy đủ thông tin">
-                                                                <span id="maError" class="text-danger"></span>
-                                                                <!-- Hiển thị lỗi tại đây -->
+                                    <div class="modal fade" id="editDiscountModal" tabindex="-1" role="dialog" style="max-width: 70%; margin-left: 250px;"
+                                    aria-labelledby="editDiscountModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog " role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="editDiscountModalLabel">Sửa Mã Giảm Giá
+                                                </h5>
+                                                <button type="button" class="close" data-dismiss="modal"
+                                                    aria-label="Close" id="close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form id="editDiscountForm">
+                                                    <!-- Mã giảm giá và Tên giảm giá hiển thị trên cùng một dòng -->
+                                                    <div class="form-group row">
+                                                        <input type="hidden" id="Id" value="">  <!-- Đảm bảo có giá trị -->
 
-                                                            </div>
-
-                                                            <div class="col-md-6">
-                                                                <label for="productName">Tên sản
-                                                                    phẩm</label>
-                                                                <input type="text" class="form-control" id="ten"
-                                                                    name="tenSP" required>
-                                                                <span id="tenError" class="text-danger"></span>
-                                                                <!-- Hiển thị lỗi tại đây -->
-                                                            </div>
+                                                        <div class="col-md-6">
+                                                            <label for="Code">Mã Giảm Giá</label>
+                                                            <input type="text" class="form-control"
+                                                                id="Code" name="ma" required
+                                                                placeholder="Nhập mã giảm giá">
+                                                            <span id="maError" class="text-danger"></span>
                                                         </div>
-                                                    </form>
+                                                        <div class="col-md-6">
+                                                            <label for="Name">Tên Giảm Giá</label>
+                                                            <input type="text" class="form-control"
+                                                                id="Name" name="ten" required
+                                                                placeholder="Nhập tên giảm giá">
+                                                            <span id="tenError" class="text-danger"></span>
+                                                        </div>
+                                                    </div>
 
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                                        id="closeButton">Hủy</button>
-                                                    <button type="button" class="btn btn-primary"
-                                                        id="updateBrandButton">Lưu sản phẩm</button>
-                                                </div>
+                                                    <!-- Ngày bắt đầu và Ngày kết thúc -->
+                                                    <div class="form-group row">
+                                                        <div class="col-md-6">
+                                                            <label for="startDate">Ngày Bắt Đầu</label>
+                                                            <input type="date" class="form-control"
+                                                                id="stDate" name="ngayBatDau" required>
+                                                                <span id="stDateError" class="text-danger"></span>
+
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="endDate">Ngày Kết Thúc</label>
+                                                            <input type="date" class="form-control"
+                                                                id="enDate" name="ngayKetThuc" required>
+                                                                <span id="enDateError" class="text-danger"></span>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Phần trăm giảm giá và số lần sử dụng -->
+                                                    <div class="form-group row">
+                                                        <!-- <div class="col-md-6">
+                                                        <label for="discountPercentage">Giảm Giá (%)</label>
+                                                        <input type="text" class="form-control" id="discountPercentage" name="giamGia" required
+                                                            placeholder="Nhập giảm giá (%)">-->
+                                                        <div class="col-md-6">
+                                                            <label for="discountValue">Giảm giá</label>
+                                                            <input type="text" class="form-control"
+                                                                id="percentage" name="discountValue"
+                                                                placeholder="Nhập giá trị giảm giá (ví dụ: 15% hoặc 100000)">
+                                                            <small class="form-text text-muted">Nhập số tiền hoặc
+                                                                phần trăm (ví dụ: 15% hoặc 100000).</small>
+                                                            <span id="ggError" class="text-danger"></span>
+
+
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label for="usageLimit">Số Lần Sử Dụng</label>
+                                                            <input type="number" class="form-control"
+                                                                id="usLimit" name="soLansd" required
+                                                                placeholder="Nhập số lần sử dụng">
+                                                            <span id="LansdError" class="text-danger"></span>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group">
+                                                        <label for="minValue">Giá trị tối thiểu</label>
+                                                        <input type="number" class="form-control" id="inValue" name="minValue" placeholder="Nhập giá trị tối thiểu để áp dụng mã giảm giá" 
+                                                               required>
+                                                        <small class="form-text text-muted">Giá trị tối thiểu của đơn hàng để áp dụng mã giảm giá.</small>
+                                                        <span id="ValueError" class="text-danger"></span>
+                                                    </div>
+                                                    
+                                                    <!-- Trạng thái -->
+                                                    <div class="form-group">
+                                                        <label for="status">Trạng Thái</label>
+                                                        <select class="form-control" id="tt" name="trangThai"
+                                                            required>
+                                                            <option value="true">Hoạt Động</option>
+                                                            <option value="false">Không Hoạt Động</option>
+                                                        </select>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                    id="editcloseButton">Hủy</button>
+                                                <button type="button" class="btn btn-primary"
+                                                    id="editDiscountButton">Lưu Mã Giảm Giá</button>
                                             </div>
                                         </div>
                                     </div>
-
+                                </div>
 
 
                                     <div class="modal fade" id="addDiscountModal" tabindex="-1" role="dialog" style="max-width: 70%; margin-left: 250px;"
