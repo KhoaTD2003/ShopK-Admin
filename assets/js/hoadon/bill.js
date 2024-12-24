@@ -1,14 +1,26 @@
 $(document).ready(function () {
-   
 
-    function loadInvoiceData() {
+
+    function loadInvoiceData(pageNumber = 0, searchKeyword = '', ghiChu = '',trangThai = '') {
+        console.log("Trang Thai:", trangThai);  // Kiểm tra giá trị trangThai
+
         $.ajax({
-            url: 'http://localhost:8080/api/hoadon', // Sửa lại URL theo yêu cầu
+            url: `http://localhost:8080/api/hoadon`, // Sửa lại URL theo yêu cầu
             type: 'GET',
+            data: {
+                pageNumber: pageNumber,      // Số trang
+                maHoaDon: searchKeyword, // Từ khóa tìm kiếm (nếu có)
+                sdt: searchKeyword, // Từ khóa tìm kiếm (nếu có)
+                ghiChu: ghiChu,  // Gửi giá trị ghiChu đúng với dữ liệu API
+                trangThai: trangThai     // Trạng thái hóa đơn (Đã Thanh Toán/Chưa Thanh Toán)
+
+            },
             success: function (data) {
+                console.log("Dữ liệu API trả về: ", data);  // Kiểm tra dữ liệu trả về từ API
+
                 // Xử lý dữ liệu trả về từ API
                 let tableRows = '';
-                if (data.length === 0) {
+                if (data.content.length === 0) {
                     // Thêm thông báo khi không có hóa đơn nào
                     tableRows = `
                         <tr>
@@ -17,7 +29,7 @@ $(document).ready(function () {
                         </tr>
                     `;
                 } else {
-                    data.forEach(function (invoice, index) {
+                    data.content.forEach(function (invoice, index) {
                         tableRows += `
                     <tr>
                         <td>${index + 1}</td> <!-- Thêm STT -->
@@ -53,6 +65,7 @@ $(document).ready(function () {
 
                 $('#invoiceTableBody').html(tableRows);
                 registerEdit();
+                renderPaginatio(data.totalPages, pageNumber);
 
             },
             error: function (xhr, status, error) {
@@ -61,9 +74,67 @@ $(document).ready(function () {
 
         });
     }
-    // <td>${invoice.id}</td> <!-- ID Hóa đơn -->
+
+    $('#sortStatus').change(function () {
+        const trangThai = $(this).val(); // Lấy giá trị trạng thái được chọn
+        const searchKeyword = $('#searchKeyword').val(); // Lấy từ khóa tìm kiếm
+        const ghiChu = $('input[name="billStatus"]:checked').val() === 'Online' ? 'Online' : ''; // Ghi chú nếu có (Online hoặc In Store)
+    
+        console.log("Trang Thai Chon:", trangThai);  // Kiểm tra trạng thái đã chọn
+    
+        loadInvoiceData(0, searchKeyword, ghiChu, trangThai);  // Truyền giá trị trạng thái vào API
+    });
+    
+ 
+    $('input[name="billStatus"]').change(function () {
+        const billStatus = $('input[name="billStatus"]:checked').val();  // Lấy giá trị trạng thái lọc
+        console.log("Trạng thái lọc: " + billStatus);  // Kiểm tra giá trị của billStatus
+        const searchKeyword = $('#searchKeyword').val();  // Lấy từ khóa tìm kiếm
+    
+        // Dựa vào giá trị billStatus, gửi đúng giá trị ghiChu vào API
+        let ghiChu = '';
+        if (billStatus === 'Online') {
+            ghiChu = 'Online';
+        } else if (billStatus === 'In Store') {
+            ghiChu = 'In Store';
+        } else {
+            ghiChu = '';  // Nếu chọn "Tất cả", không lọc theo trạng thái ghi chú
+        }
+        console.log("Giá trị ghiChu trước khi gửi: " + ghiChu);  // Debug giá trị ghiChu
+    
+        loadInvoiceData(0, searchKeyword, ghiChu);  // Gọi lại load dữ liệu với ghiChu được truyền vào
+    });
+    
+    $('#searchKeyword').on('input', function () {
+        const searchKeyword = $(this).val(); // Lấy từ khóa người dùng nhập
+        loadInvoiceData(0, searchKeyword);   // Gọi hàm loadProductData với từ khóa tìm kiếm
+
+    });
+
+
+    function renderPaginatio(totalPages, currentPage) {
+        console.log(totalPages +"trang");
+        let paginationHtml = '';
+        for (let i = 0; i < totalPages; i++) {
+            paginationHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                                    <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
+                               </li>`;
+        }
+        // console.log('Generated HTML:', paginationHtml); // Kiểm tra HTML sinh ra
+
+        $('#pagination').html(paginationHtml);
+    }
+
+    // Bắt sự kiện khi click vào các nút phân trang
+    $('#pagination').on('click', '.page-link', function (e) {
+        e.preventDefault();
+        const pageNumber = $(this).data('page');  // Lấy số trang từ thuộc tính data-page
+        loadInvoiceData(pageNumber);  // Tải dữ liệu của trang tương ứng
+    });
 
     loadInvoiceData();
+    
+    
 
     $(document).on('hidden.bs.modal', '#editInvoiceModal', function () {
         console.log('Modal đã đóng, tải lại dữ liệu...');
@@ -71,6 +142,7 @@ $(document).ready(function () {
     });
 
 });
+
 
 
 function formatCurrency(amount) {
@@ -138,8 +210,6 @@ function registerEdit() {
                                   </span>
                             </td>
 
-                        
-                           
                         </tr>`;
                 });
 
@@ -157,6 +227,7 @@ function registerEdit() {
 
                 // Hiển thị modal
                 $('#editInvoiceModal').modal('show');
+
             },
             error: function () {
                 alert('Không thể tải chi tiết hóa đơn.');

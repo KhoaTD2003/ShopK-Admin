@@ -20,10 +20,6 @@ $(document).ready(function () {
                         giamGiaDisplay = giamGiaDisplay;
                     } else {
                         // Nếu không có dấu % thì thêm "Đ" vào
-                        function formatCurrency(amount) {
-                            if (typeof amount !== 'number') amount = Number(amount); // Đảm bảo đầu vào là số
-                            return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-                        }
                         giamGiaDisplay = formatCurrency(giamGiaDisplay);
 
                     }
@@ -37,7 +33,7 @@ $(document).ready(function () {
                         <td>${startDate}</td> <!-- Tên sản phẩm -->
                         <td>${endDate}</td> <!-- Tên sản phẩm -->
                         <td>${giamGiaDisplay}</td> <!-- Tên sản phẩm -->
-                        <td>${discount.giaTriMin}</td> <!-- Tên sản phẩm -->
+                        <td>${formatCurrency(discount.giaTriMin)}</td> <!-- Tên sản phẩm -->
                         <td>${discount.soLansd}</td> <!-- Tên sản phẩm -->
 
                         <td>
@@ -62,7 +58,10 @@ $(document).ready(function () {
             }
         });
     }
-
+    function formatCurrency(amount) {
+        if (typeof amount !== 'number') amount = Number(amount); // Đảm bảo đầu vào là số
+        return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+    }
     function registerStatusToggle() {
         $('.status-toggle').click(function () {
             var icon = $(this);  // Lưu đối tượng icon vào một biến
@@ -445,5 +444,4 @@ $(document).ready(function () {
 
 
 })
-
 

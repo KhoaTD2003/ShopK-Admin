@@ -11,7 +11,6 @@ $(document).ready(function () {
                     
                    <tr>
                         <td>${index + 1}</td> <!-- Mã sản phẩm -->
-                        <td>${brand.id}</td> <!-- Mã sản phẩm -->
                         <td>${brand.ma}</td> <!-- Mã sản phẩm -->
                         <td>${brand.ten}</td> <!-- Tên sản phẩm -->
                          <td>

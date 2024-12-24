@@ -49,12 +49,24 @@ $(document).ready(function () {
     // }
 
     function loadProductData(pageNumber = 0, searchKeyword = '') {
+
+        let sortByPrice = $('#sortByPrice').val();
+
+        // Lấy giá trị từ bộ lọc trạng thái tồn kho
+        let stockStatus = $('input[name="stockStatus"]:checked').val();  // 'all', 'inStock', 'outOfStock'
+    
+        let productStatus = $('input[name="productStatus"]:checked').val();  // 'active', 'inactive'
+
         $.ajax({
             url: `http://localhost:8080/api/loginAuth/product`,
             type: 'GET',
             data: {
                 page: pageNumber,      // Số trang
-                tenSP: searchKeyword  // Từ khóa tìm kiếm (nếu có)
+                tenSP: searchKeyword, // Từ khóa tìm kiếm (nếu có)
+                sortByPrice: sortByPrice, // Sắp xếp theo giá ('asc' hoặc 'desc')
+                soLuongTon: stockStatus === 'all' ? null :  0,// Lọc theo trạng thái tồn kho (null cho tất cả)
+                trangThai: productStatus === 'active' ? true : false  // Lọc theo trạng thái hoạt động
+
             },
             success: function (data) {
                 let tableRows = '';
@@ -128,6 +140,19 @@ $(document).ready(function () {
     $('#searchKeyword').on('input', function () {
         const searchKeyword = $(this).val(); // Lấy từ khóa người dùng nhập
         loadProductData(0, searchKeyword);   // Gọi hàm loadProductData với từ khóa tìm kiếm
+
+    });
+
+    $('#sortByPrice').change(function () {
+        loadProductData(0, $('#searchInput').val());  // Gọi lại load dữ liệu với giá trị đã thay đổi
+    });
+    
+    $('input[name="stockStatus"]').change(function () {
+        loadProductData(0, $('#searchInput').val());  // Gọi lại load dữ liệu khi thay đổi trạng thái tồn kho
+    });
+
+    $('input[name="productStatus"]').change(function () {
+        loadProductData(0, $('#searchInput').val());  // Gọi lại load dữ liệu khi thay đổi trạng thái hoạt động
     });
 
     // Hàm đăng ký sự kiện click cho các icon trạng thái
@@ -166,6 +191,7 @@ $(document).ready(function () {
                             .css('color', 'gray');
                     }
                     alert('Cập nhật trạng thái thành công!');
+                    loadProductData()
                 },
                 error: function () {
                     alert('Có lỗi xảy ra khi cập nhật trạng thái.');

@@ -14,7 +14,6 @@ $(document).ready(function () {
                     tableRows += `
                         <tr>
                             <td>${index + 1}</td> <!-- ID (UUID) -->
-                            <td>${user.id}</td> <!-- ID (UUID) -->
                             <td>${user.maNguoiDung}</td> <!-- Mã người dùng, thay thế cho user.id -->
                             <td>${user.hoTen}</td> <!-- Họ tên -->
                             <td>${user.namSinh || 'N/A'}</td> <!-- Năm sinh (Nếu có) -->

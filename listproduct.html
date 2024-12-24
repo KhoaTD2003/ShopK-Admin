@@ -60,10 +60,9 @@
             <!-- end of navbar navigation -->
             <div class="content">
                 <div class="container">
-                    <div class="page-title">
+                    <!-- <div class="page-title">
                         <h3> Danh Sách Sản Phẩm
-                            <!-- <a href="roles.html" class="btn btn-sm btn-outline-primary float-end"><i
-                                    class="fas fa-user-shield"></i> Roles</a> -->
+                          
                            
                             <button type="button" class="btn btn-sm btn-outline-primary float-end" data-toggle="modal"
                                 data-target="#addProductModal" onclick="loadProductAttributes()">
@@ -74,7 +73,71 @@
                             </div>
                             
                         </h3>
+                    </div> -->
+
+                    <div class="page-title">
+                        <h3>Danh Sách Sản Phẩm
+                            <button type="button" class="btn btn-sm btn-primary float-end" data-toggle="modal"
+                                data-target="#addProductModal" onclick="loadProductAttributes()">
+                                <i class="fas fa-plus"></i> Thêm Sản Phẩm
+                            </button>
+                        </h3>
                     </div>
+
+                    <!-- Phần bộ lọc và tìm kiếm -->
+                    <div class="filters d-flex flex-wrap align-items-center my-3">
+                        <!-- Tìm kiếm -->
+                        <!-- <div class="search-bar me-3">
+                            <input type="text" id="searchKeyword" class="form-control"
+                                placeholder="Tìm kiếm sản phẩm...">
+                        </div> -->
+                        <div class="search-bar me-3 d-flex align-items-center">
+                            <label for="searchKeyword" class="me-2">Tìm kiếm:</label>
+                            <input type="text" id="searchKeyword" class="form-control"  placeholder="Tìm kiếm sản phẩm . . .">
+                        </div>
+
+                        <!-- Bộ lọc sắp xếp giá -->
+                        <div class="filter-options me-3">
+                            <select id="sortByPrice" class="form-select">
+                                <option value="asc">Giá tăng dần</option>
+                                <option value="desc">Giá giảm dần</option>
+                            </select>
+                        </div>
+
+                        <!-- Bộ lọc số lượng tồn -->
+                        <div class="stock-filter d-flex align-items-center">
+                            <span class="me-2">Tồn Kho:</span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="stockStatus" id="stockAll"
+                                    value="all" checked>
+                                <label class="form-check-label" for="stockAll">Còn Hàng</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="stockStatus" id="stockOutOfStock"
+                                    value="outOfStock">
+                                <label class="form-check-label" for="stockOutOfStock">Hết hàng</label>
+                            </div>
+                        </div>
+
+                        <!-- Bộ lọc trạng thái hoạt động -->
+                        <div class="status-filter d-flex align-items-center ">
+                            <span class="me-2">Status:</span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="productStatus" id="active"
+                                    value="active" checked>
+                                <label class="form-check-label" for="active">Hoạt động</label>
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="productStatus" id="inactive"
+                                    value="inactive">
+                                <label class="form-check-label" for="inactive">Không hoạt động</label>
+                            </div>
+                        </div>
+
+                    </div>
+
                     <div class="box box-primary">
                         <div class="box-body">
                             <table width="100%" class="table table-hover" id="dataTables-example">
@@ -83,19 +146,19 @@
                                         <tr>
                                             <th>STT</th>
                                             <th>Mã </th>
-                                            <th>Tên Sản Phẩm </th>
-                                            <th>Thương hiệu </th>
-                                            <th>Màu Sắc</th>
-                                            <th>Thể Loại</th>
-                                            <th>Xuất xứ</th>
-                                            <th>Chất liệu</th>
-                                            <th>size</th>
+                                            <th>Tên </th>
+                                            <th>Brand</th>
+                                            <th>Color</th>
+                                            <th>Category</th>
+                                            <th>Origin</th>
+                                            <th>Material</th>
+                                            <th>Size</th>
                                             <th>Tồn</th>
                                             <th>Giá bán</th>
-                                            <th>Mô tả</th>
+                                            <th>Description</th>
                                             <th>Ảnh</th>
-                                            <th>Trạng Thái</th>
-                                            <th>Thao Tác</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                 </thead>
@@ -536,7 +599,7 @@
                                 </tbody>
                             </table>
                             <nav aria-label="Page navigation">
-                                <ul id="pagination" class="pagination"></ul>
+                                <ul id="pagination" class="pagination justify-content-center"></ul>
                             </nav>
                         </div>
                     </div>

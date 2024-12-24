@@ -4,7 +4,17 @@
 * Author: Alexis Luna
 * Website: https://github.com/alexis-luna/bootstrap-simple-admin-template
 -------------------------------------------------------------------*/
-
+/* .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030; /* Đảm bảo navbar nằm trên các phần khác */
+    /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+body {
+    padding-top: 50px; /* Cung cấp khoảng trống cho navbar, nếu cần */
+/* }  */
 
 .nav-dropdown .nav-link {
     color: #B2EBF2;
