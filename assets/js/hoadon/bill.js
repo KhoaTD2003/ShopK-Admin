@@ -25,7 +25,7 @@ $(document).ready(function () {
                     tableRows = `
                         <tr>
                             <td colspan="11" class="text-center" style="font-weight: bold;
-                                 color: #555;">Không có hóa đơn nào</td>                
+                                 color: #555;">NO DATA FOUND !</td>                
                         </tr>
                     `;
                 } else {

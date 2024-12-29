@@ -1,63 +1,118 @@
 $(document).ready(function () {
 
     function loadDiscount(pageNumber = 0) {
+
+        const searchKeyword = $('#searchKeyword').val();
+        const selectedStatus = $('#sortStatus').val();
+        const discountType = $('input[name="loaiGiam"]:checked').val() || 'all'; // Mặc định là 'all' nếu không có lựa chọn
+
+        const requestData = {
+            pageNumber: pageNumber,
+            ten: searchKeyword,
+            ma: searchKeyword,
+            trangThai: selectedStatus !== null ? selectedStatus : '',
+            // giamGia: discountType  // Nếu không có loại nào được chọn, mặc định là 'all'
+        };
+
         $.ajax({
-            url: `http://127.0.0.1:8080/api/giamgia/page?pageNumber=${pageNumber}`, // Đường dẫn API có hỗ trợ sắp xếp
+            url: `http://127.0.0.1:8080/api/giamgia/page`, // Đường dẫn API có hỗ trợ sắp xếp
             type: 'GET',
+            data: requestData, // Truyền dữ liệu dưới dạng đối tượng
             success: function (data) {
+                console.log(data);
                 let tableRows = '';
-                data.content.forEach(function (discount, index) {
-
-                    let now = (discount.ngayTao).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày bắt đầu
-                    let startDate = (discount.ngayBatDau).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày bắt đầu
-                    let endDate = (discount.ngayKetThuc).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày kết thúc
-
-                    let giamGiaDisplay = discount.giamGia;
-
-                    // Kiểm tra xem giá trị giảm giá có phải là phần trăm không
-                    if (giamGiaDisplay.includes('%')) {
-                        // Nếu có dấu % thì giữ nguyên
-                        giamGiaDisplay = giamGiaDisplay;
-                    } else {
-                        // Nếu không có dấu % thì thêm "Đ" vào
-                        giamGiaDisplay = formatCurrency(giamGiaDisplay);
-
-                    }
-                    tableRows += `
-                    
-                   <tr>
-                        <td>${index + 1}</td> <!-- Mã sản phẩm -->
-                        <td>${discount.ma}</td> <!-- Mã sản phẩm -->
-                        <td>${discount.ten}</td> <!-- Mã sản phẩm -->
-                        <td>${now}</td> <!-- Tên sản phẩm -->
-                        <td>${startDate}</td> <!-- Tên sản phẩm -->
-                        <td>${endDate}</td> <!-- Tên sản phẩm -->
-                        <td>${giamGiaDisplay}</td> <!-- Tên sản phẩm -->
-                        <td>${formatCurrency(discount.giaTriMin)}</td> <!-- Tên sản phẩm -->
-                        <td>${discount.soLansd}</td> <!-- Tên sản phẩm -->
-
-                        <td>
-                            <!-- Trạng thái sản phẩm: ON/OFF -->
-                            <i class="fas fa-toggle-${discount.trangThai ? 'on' : 'off'} status-toggle" data-id="${discount.id}" style="font-size: 24px; color: ${discount.trangThai ? 'green' : 'gray'};"></i>
-                        </td>
-                         <td>
-                            <button class="btn btn-outline-info btn-rounded" data-id="${discount.id}"><i class="fas fa-pen"></i> Edit</button>
-                            <button class="btn btn-outline-danger btn-rounded" data-id="${discount.id}"><i class="fas fa-trash"></i> Delete</button>
-                        </td>
-                    </tr>
+                if (data.content.length === 0) {
+                    tableRows = `
+                        <tr>
+                            <td colspan="11" class="text-center" style="font-weight: bold;
+                                 color: #555;">NO DATA FOUND !</td>                
+                            </td>                
+                        </tr>
                     `;
-                });
+                } else {
+                    data.content.forEach(function (discount, index) {
+
+                        let now = (discount.ngayTao).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày bắt đầu
+                        let startDate = (discount.ngayBatDau).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày bắt đầu
+                        let endDate = (discount.ngayKetThuc).toLocaleString().slice(0, 19).replace("T", " "); // Định dạng ngày kết thúc
+
+                        // let giamGiaDisplay = discount.giamGia;
+
+                        // // Kiểm tra xem giá trị giảm giá có phải là phần trăm không
+                        // if (giamGiaDisplay.includes('%')) {
+                        //     // Nếu có dấu % thì giữ nguyên
+                        //     giamGiaDisplay = giamGiaDisplay;
+                        // } else {
+                        //     // Nếu không có dấu % thì thêm "Đ" vào
+                        //     giamGiaDisplay = formatCurrency(giamGiaDisplay);
+
+                        // }
+                        let giamGiaDisplay = discount.giamGia;
+
+                        // Kiểm tra giá trị giảm giá và định dạng
+                        let isPercent = giamGiaDisplay.trim().endsWith('%'); // Kiểm tra nếu có dấu %
+
+                        if (isPercent) {
+                            // Nếu là phần trăm, giữ nguyên
+                            giamGiaDisplay = giamGiaDisplay;
+                        } else {
+                            // Nếu không là phần trăm, định dạng giá trị tiền
+                            giamGiaDisplay = formatCurrency(giamGiaDisplay);
+                        }
+
+                        // Lọc theo loại giảm giá
+                        let shouldDisplay = false;
+                        if (discountType === 'all') {
+                            shouldDisplay = true; // Hiển thị tất cả
+                        } else if (discountType === 'phanTram' && isPercent) {
+                            shouldDisplay = true; // Hiển thị nếu là phần trăm
+                        } else if (discountType === 'vnd' && !isPercent) {
+                            shouldDisplay = true; // Hiển thị nếu là giá tiền
+                        }
+
+                        // Nếu điều kiện lọc đúng, thêm hàng vào bảng
+                        if (shouldDisplay) {
+                            tableRows += `
+                    
+                        <tr>
+                            <td>${index + 1}</td> <!-- Mã sản phẩm -->
+                            <td>${discount.ma}</td> <!-- Mã sản phẩm -->
+                            <td>${discount.ten}</td> <!-- Mã sản phẩm -->
+                            <td>${now}</td> <!-- Tên sản phẩm -->
+                            <td>${startDate}</td> <!-- Tên sản phẩm -->
+                            <td>${endDate}</td> <!-- Tên sản phẩm -->
+                            <td>${giamGiaDisplay}</td> <!-- Tên sản phẩm -->
+                            <td>${formatCurrency(discount.giaTriMin)}</td> <!-- Tên sản phẩm -->
+                            <td>${discount.soLansd}</td> <!-- Tên sản phẩm -->
+
+                            <td>
+                                <!-- Trạng thái sản phẩm: ON/OFF -->
+                                <i class="fas fa-toggle-${discount.trangThai ? 'on' : 'off'} status-toggle" data-id="${discount.id}" style="font-size: 24px; color: ${discount.trangThai ? 'green' : 'gray'};"></i>
+                            </td>
+                            <td>
+                                <button class="btn btn-outline-info btn-rounded" data-id="${discount.id}"><i class="fas fa-pen"></i> Edit</button>
+                                <button class="btn btn-outline-danger btn-rounded" data-id="${discount.id}"><i class="fas fa-trash"></i> Delete</button>
+                            </td>
+                        </tr>
+                        `;
+                        }
+                    });
+                }
                 $('#discountTableBody').html(tableRows);
                 registerStatusToggle(); // Đăng ký sự kiện toggle trạng thái
                 renderPaginatio(data.totalPages, pageNumber);
 
-
             },
+
             error: function (xhr, status, error) {
                 alert('Có lỗi xảy ra khi tải dữ liệu sản phẩm.');
             }
         });
     }
+    $('#searchKeyword, #sortStatus, input[name="loaiGiam"]').on('change keyup', function () {
+        loadDiscount();
+    });
+
     function formatCurrency(amount) {
         if (typeof amount !== 'number') amount = Number(amount); // Đảm bảo đầu vào là số
         return amount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });

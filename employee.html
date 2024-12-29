@@ -12,7 +12,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Users | Bootstrap Simple Admin Template</title>
-    
+
 
     <link href="assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
     <link href="assets/vendor/fontawesome/css/solid.min.css" rel="stylesheet">
@@ -38,9 +38,42 @@
                 <div class="container">
                     <div class="page-title">
                         <h3>Nhân Viên
-                            <a href="roles.html" class="btn btn-sm btn-outline-primary float-end"><i
-                                    class="fas fa-user-shield"></i> Roles</a>
+                            <!-- <a href="roles.html" class="btn btn-sm btn-outline-primary float-end"><i
+                                    class="fas fa-user-shield"></i> Roles</a> -->
                         </h3>
+                    </div>
+                    <div class="filters d-flex align-items-center my-3">
+                        <!-- Tìm kiếm -->
+                        <div class="search-bar me-3 d-flex align-items-center">
+                            <label for="searchKeyword" class="me-2">Tìm kiếm:</label>
+                            <input type="text" id="searchKeyword" class="form-control"
+                                placeholder="Nhập Tên, SĐT . . .">
+                        </div>
+
+                        <!-- Bộ lọc trạng thái -->
+                        <div class="filter-options me-3 d-flex align-items-center">
+                            <label for="sortStatus" class="me-2">Status:</label>
+                            <select id="sortStatus" class="form-select">
+                                <option value="">Tất Cả</option>
+                                <option value="true">Active</option>
+                                <option value="false">InActive</option>
+                            </select>
+                        </div>
+
+                        <!-- <div class="stock-filter d-flex align-items-center">
+                            <span class="me-2">Status</span>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="userStatus" id="active" value="true">
+                                <label class="form-check-label" for="active">Active</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="userStatus" id="inactive"
+                                    value="false">
+                                <label class="form-check-label" for="inactive">No Active</label>
+                            </div>
+                        </div> -->
+
+
                     </div>
                     <div class="box box-primary">
                         <div class="box-body">
@@ -140,6 +173,9 @@
 
                                 </tbody>
                             </table>
+                            <nav aria-label="Page navigation">
+                                <ul id="pagination" class="pagination justify-content-center"></ul>
+                            </nav>
                         </div>
                     </div>
                 </div>

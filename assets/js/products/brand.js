@@ -1,13 +1,29 @@
 $(document).ready(function () {
 
-    function loadBrand(pageNumber = 0) {
+    function loadBrand(pageNumber = 0, searchKeyword = '') {
         $.ajax({
-            url: `http://127.0.0.1:8080/api/thuonghieu/page?pageNumber=${pageNumber}`, // Đường dẫn API có hỗ trợ sắp xếp
+            url: `http://127.0.0.1:8080/api/thuonghieu/page`, // Đường dẫn API có hỗ trợ sắp xếp
             type: 'GET',
+            data: {
+                pageNumber: pageNumber,
+                ten: searchKeyword // Đặt tên tham số đúng
+
+            },
             success: function (data) {
+                console.log(data); // Kiểm tra dữ liệu trả về
+
                 let tableRows = '';
-                data.content.forEach(function (brand, index) {
-                    tableRows += `
+                if (data.content.length === 0) {
+                    // Thêm thông báo khi không có hóa đơn nào
+                    tableRows = `
+                        <tr>
+                            <td colspan="11" class="text-center" style="font-weight: bold;
+                                 color: #555;">NO DATA FOUND !</td>                
+                        </tr>
+                    `;
+                } else {
+                    data.content.forEach(function (brand, index) {
+                        tableRows += `
                     
                    <tr>
                         <td>${index + 1}</td> <!-- Mã sản phẩm -->
@@ -19,9 +35,10 @@ $(document).ready(function () {
                         </td>
                     </tr>
                     `;
-                });
+                    });
+                }
                 $('#brandTableBody').html(tableRows);
-                    renderPaginatio(data.totalPages, pageNumber);
+                renderPaginatio(data.totalPages, pageNumber);
 
 
             },
@@ -30,6 +47,12 @@ $(document).ready(function () {
             }
         });
     }
+
+    $('#searchKeyword').on('input', function () {
+        const searchKeyword = $(this).val();
+        console.log("Searching for:", searchKeyword); // Kiểm tra từ khóa tìm kiếm
+        loadBrand(0, searchKeyword); // Gọi lại hàm với từ khóa tìm kiếm
+    });
 
 
     function renderPaginatio(totalPages, currentPage) {
@@ -104,33 +127,33 @@ $(document).ready(function () {
     $('#updateBrandButton').click(function (event) {
         if (confirm('Bạn có chắc chắn muốn sửa thương hiệu này?')) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        const code = $('#ma').val().trim();
-        const name = $('#ten').val().trim();
-        const id = $('#id').val();
+            const code = $('#ma').val().trim();
+            const name = $('#ten').val().trim();
+            const id = $('#id').val();
 
-        if (!code || !name) {
-            $('#maError').text(!code ? 'Mã không được để trống' : '');
-            $('#tenError').text(!name ? 'Tên không được để trống' : '');
-            return;
-        }
-
-        $.ajax({
-            url: `http://localhost:8080/api/thuonghieu/${id}`,
-            method: 'PUT',
-            contentType: 'application/json',
-            data: JSON.stringify({ ma: code, ten: name }),
-            success: function () {
-                alert("Brand updated successfully!");
-                $('#editBrandModal').modal('hide');
-                loadBrand(); // Refresh brand list
-            },
-            error: function () {
-                alert("Error updating brand!");
+            if (!code || !name) {
+                $('#maError').text(!code ? 'Mã không được để trống' : '');
+                $('#tenError').text(!name ? 'Tên không được để trống' : '');
+                return;
             }
-        });
-    }
+
+            $.ajax({
+                url: `http://localhost:8080/api/thuonghieu/${id}`,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({ ma: code, ten: name }),
+                success: function () {
+                    alert("Brand updated successfully!");
+                    $('#editBrandModal').modal('hide');
+                    loadBrand(); // Refresh brand list
+                },
+                error: function () {
+                    alert("Error updating brand!");
+                }
+            });
+        }
     });
 
     $('#closeButton').on('click', function () {
@@ -153,28 +176,28 @@ $(document).ready(function () {
         }
         if (confirm('Bạn có chắc chắn muốn thêm thương hiệu này?')) {
 
-        // Gửi yêu cầu thêm thương hiệu
-        $.ajax({
-            url: 'http://localhost:8080/api/thuonghieu',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify({ ma: code, ten: name }),
-            success: function () {
-                alert("Brand added successfully!");
-                // $('#addBrandModal').modal('hide');
-                 $('#addBrandForm')[0].reset(); // Reset form
-                 window.location.reload();
+            // Gửi yêu cầu thêm thương hiệu
+            $.ajax({
+                url: 'http://localhost:8080/api/thuonghieu',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ ma: code, ten: name }),
+                success: function () {
+                    alert("Brand added successfully!");
+                    // $('#addBrandModal').modal('hide');
+                    $('#addBrandForm')[0].reset(); // Reset form
+                    window.location.reload();
                 },
-            error: function (xhr) {
-                if (xhr.status === 400 && xhr.responseJSON) { // Lỗi do backend trả về
-                    $('#nameError').text(xhr.responseJSON.message || 'Tên thương hiệu đã tồn tại!');
-                } else {
-                    alert("Thêm thương hiệu thất bại!");
+                error: function (xhr) {
+                    if (xhr.status === 400 && xhr.responseJSON) { // Lỗi do backend trả về
+                        $('#nameError').text(xhr.responseJSON.message || 'Tên thương hiệu đã tồn tại!');
+                    } else {
+                        alert("Thêm thương hiệu thất bại!");
+                    }
+                    // alert("Thêm thương hiệu thất bại!");
                 }
-                // alert("Thêm thương hiệu thất bại!");
-            }
-        });
-    }
+            });
+        }
     });
 
 })

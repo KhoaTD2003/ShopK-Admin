@@ -380,7 +380,9 @@ function displayProducts(pageNumber = 1) {
             $(productList).empty();
 
             if (response.content.length === 0) {
-                // updateProductCount(response.content.length);  // Cập nhật số lượng sản phẩm
+                $(productList).append(` <p class="text-center style="font-weight: bold;
+                                 color: #555;">NO DATA FOUND !</td>                
+                    `);
                 return; // Không làm gì nếu không có sản phẩm
             }
 

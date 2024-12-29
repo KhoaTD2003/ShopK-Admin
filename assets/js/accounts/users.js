@@ -2,15 +2,37 @@ $(document).ready(function () {
 
     const role = localStorage.getItem('role');  // Giả sử role được lưu trữ trong localStorage
 
+
     // Hàm tải dữ liệu người dùng từ API
-    function loadUserData() {
+    function loadUserData(pageNumber = 0, selectedStatus = null, searchKeyword = '') {
+        const roLe = 'khách hàng'; // Vai trò người dùng
+
+        const requestData = {
+            role: roLe,
+            pageNumber: pageNumber,
+            hoTen: searchKeyword,
+            sdt: searchKeyword,
+            trangThai: selectedStatus !== null ? selectedStatus : '', // Lấy trạng thái từ giao diện
+        };
+
         $.ajax({
-            url: 'http://localhost:8080/api/loginAuth/customer?role=khách hàng', // Sửa lại URL theo yêu cầu
+            url: `http://localhost:8080/api/loginAuth/customer`, // Sửa lại URL theo yêu cầu
             type: 'GET',
+            data: requestData,
             success: function (data) {
+                console.log(data);
                 // Xử lý dữ liệu trả về từ API
                 let tableRows = '';
-                data.forEach(function (user, index) {
+                if (data.content.length === 0) {
+                    console.log('Không có dữ liệu nào được tìm thấy.'); // Thông báo không có dữ liệu
+                    tableRows = `
+                    <tr>
+                        <td colspan="11" class="text-center" style="font-weight: bold;
+                                 color: #555;">NO DATA FOUND !</td>                
+                    </tr>
+                    `; 
+                } else {
+                data.content.forEach(function (user, index) {
                     tableRows += `
                         <tr>
                             <td>${index + 1}</td> <!-- ID (UUID) -->
@@ -38,14 +60,53 @@ $(document).ready(function () {
                         </tr>
                     `;
                 });
+            }
                 $('#userTableBody').html(tableRows);
                 registerStatusToggle(); // Đăng ký lại sự kiện sau khi bảng được cập nhật
+                renderPaginatio(data.totalPages, pageNumber);
+
             },
             error: function (xhr, status, error) {
                 alert('Có lỗi xảy ra khi tải dữ liệu.');
             }
         });
     }
+
+    // Xử lý sự kiện tìm kiếm
+    $('#searchKeyword').on('input', function () {
+        const searchKeyword = $(this).val(); // Lấy từ khóa người dùng nhập
+        const selectedStatus = $('#sortStatus').val() === 'true' ? true : $('#sortStatus').val() === 'false' ? false : null; // Lấy trạng thái hiện tại
+        loadUserData(0, selectedStatus, searchKeyword); // Gọi hàm loadUserData với các tham số
+    });
+
+    // Xử lý sự kiện thay đổi trạng thái
+    $('#sortStatus').on('change', function () {
+        let selectedStatus = $(this).val();
+        selectedStatus = selectedStatus === '' ? null : (selectedStatus === 'true'); // Chuyển giá trị 'true'/'false' thành boolean
+
+        console.log('Trạng thái được chọn: ', selectedStatus);  // Kiểm tra giá trị
+
+        const searchKeyword = $('#searchKeyword').val(); // Lấy từ khóa tìm kiếm hiện tại
+        loadUserData(0, selectedStatus, searchKeyword); // Truyền cả hai tham số
+    });
+
+
+    function renderPaginatio(totalPages, currentPage) {
+        let paginationHtml = '';
+        for (let i = 0; i < totalPages; i++) {
+            paginationHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}">
+                                    <a class="page-link" href="#" data-page="${i}">${i + 1}</a>
+                               </li>`;
+        }
+        $('#pagination').html(paginationHtml);
+    }
+
+    // Bắt sự kiện khi click vào các nút phân trang
+    $('#pagination').on('click', '.page-link', function (e) {
+        e.preventDefault();
+        const pageNumber = $(this).data('page');  // Lấy số trang từ thuộc tính data-page
+        loadUserData(pageNumber);  // Tải dữ liệu của trang tương ứng
+    });
 
     loadUserData();  // Tải dữ liệu khi trang được tải xong
 

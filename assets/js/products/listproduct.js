@@ -70,6 +70,15 @@ $(document).ready(function () {
             },
             success: function (data) {
                 let tableRows = '';
+                if (data.content.length === 0) {
+                    console.log('Không có dữ liệu nào được tìm thấy.'); // Thông báo không có dữ liệu
+                    tableRows = `
+                    <tr>
+                        <td colspan="11" class="text-center" style="font-weight: bold;
+                                 color: #555;">NO DATA FOUND !</td>                
+                    </tr>
+                    `; 
+                } else {
                 data.content.forEach(function (product, index) {
                     tableRows += `
                        <tr>
@@ -97,6 +106,7 @@ $(document).ready(function () {
                         </tr>
                     `;
                 });
+            }
 
                 $('#productsTableBody').html(tableRows); // Cập nhật bảng sản phẩm
                 registerStatusToggle(); // Đăng ký sự kiện toggle trạng thái
