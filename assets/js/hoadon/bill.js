@@ -1,7 +1,7 @@
 $(document).ready(function () {
 
 
-    function loadInvoiceData(pageNumber = 0, searchKeyword = '', ghiChu = '',trangThai = '') {
+    function loadInvoiceData(pageNumber = 0, searchKeyword = '', ghiChu = '', trangThai = '') {
         console.log("Trang Thai:", trangThai);  // Kiểm tra giá trị trangThai
 
         $.ajax({
@@ -30,6 +30,8 @@ $(document).ready(function () {
                     `;
                 } else {
                     data.content.forEach(function (invoice, index) {
+                        if ((trangThai === '' && invoice.trangThai !== 'Cancle') || (trangThai === 'Cancle' && invoice.trangThai === 'Cancle')) {
+
                         tableRows += `
                     <tr>
                         <td>${index + 1}</td> <!-- Thêm STT -->
@@ -49,17 +51,27 @@ $(document).ready(function () {
                         <td>${invoice.trangThai || 'N/A'}</td> <!-- Trạng thái tài khoản -->
                       
                         <td class="text-end">
-                        <button class="btn btn-outline-info btn-rounded editInvoiceBtn" data-id="${invoice.id}">
-                            <i class="fas fa-pen"></i> Xem
-                        </button>
-                      ${invoice.trangThai !== 'Ðã Thanh Toán' ? `
-                        <button class="btn btn-outline-danger btn-rounded" data-id="${invoice.id}">
-                           <i class="fas fa-trash"></i> Delete
-                        </button>
-                         ` : ''}
-                        </td>
-                    </tr>
-                `;
+                            ${invoice.trangThai !== 'Cancle'
+                                ? `
+                            <button class="btn btn-outline-info btn-rounded editInvoiceBtn" data-id="${invoice.id}">
+                                <i class="fas fa-pen"></i> Xem
+                            </button>
+                            `
+                                : ''
+                            }
+                    
+                        ${invoice.trangThai === 'Chua Thanh Toán' ? `
+                            <button class="btn btn-outline-danger btn-rounded cancelInvoiceBtn" data-id="${invoice.id}">
+                                <i class="fas fa-times"></i> Cancel
+                            </button> `
+                                : invoice.trangThai === 'Cancle' ? `
+                            <button class="btn btn-outline-danger btn-rounded deleteInvoiceBtn" data-id="${invoice.id}">
+                                <i class="fas fa-trash"></i> Xóa
+                            </button>  `: ''}
+                            </td>
+                        </tr>
+                    `;
+                        }
                     });
                 }
 
@@ -79,18 +91,18 @@ $(document).ready(function () {
         const trangThai = $(this).val(); // Lấy giá trị trạng thái được chọn
         const searchKeyword = $('#searchKeyword').val(); // Lấy từ khóa tìm kiếm
         const ghiChu = $('input[name="billStatus"]:checked').val() === 'Online' ? 'Online' : ''; // Ghi chú nếu có (Online hoặc In Store)
-    
+
         console.log("Trang Thai Chon:", trangThai);  // Kiểm tra trạng thái đã chọn
-    
+
         loadInvoiceData(0, searchKeyword, ghiChu, trangThai);  // Truyền giá trị trạng thái vào API
     });
-    
- 
+
+
     $('input[name="billStatus"]').change(function () {
         const billStatus = $('input[name="billStatus"]:checked').val();  // Lấy giá trị trạng thái lọc
         console.log("Trạng thái lọc: " + billStatus);  // Kiểm tra giá trị của billStatus
         const searchKeyword = $('#searchKeyword').val();  // Lấy từ khóa tìm kiếm
-    
+
         // Dựa vào giá trị billStatus, gửi đúng giá trị ghiChu vào API
         let ghiChu = '';
         if (billStatus === 'Online') {
@@ -101,19 +113,75 @@ $(document).ready(function () {
             ghiChu = '';  // Nếu chọn "Tất cả", không lọc theo trạng thái ghi chú
         }
         console.log("Giá trị ghiChu trước khi gửi: " + ghiChu);  // Debug giá trị ghiChu
-    
+
         loadInvoiceData(0, searchKeyword, ghiChu);  // Gọi lại load dữ liệu với ghiChu được truyền vào
     });
-    
+
     $('#searchKeyword').on('input', function () {
         const searchKeyword = $(this).val(); // Lấy từ khóa người dùng nhập
         loadInvoiceData(0, searchKeyword);   // Gọi hàm loadProductData với từ khóa tìm kiếm
 
     });
 
+    function deleteInvoice(invoiceId) {
+        // Gửi yêu cầu DELETE tới API
+        $.ajax({
+            url: `http://localhost:8080/api/hoadon/${invoiceId}`,  // URL của API xóa hóa đơn, thay đổi theo API của bạn
+            type: 'DELETE',
+            success: function(response) {
+                // Nếu xóa thành công, cập nhật lại danh sách hóa đơn
+                alert('Hóa đơn đã được xóa!');
+                loadInvoiceData(0, '', '', '');  // Gọi lại hàm loadInvoiceData để tải lại danh sách
+            },
+            error: function(xhr, status, error) {
+                alert('Có lỗi xảy ra khi xóa hóa đơn.');
+            }
+        });
+    }
+
+    $(document).on('click', '.deleteInvoiceBtn', function() {
+        // Lấy id của hóa đơn từ thuộc tính data-id của nút
+        var invoiceId = $(this).data('id');
+        
+        // Xác nhận việc xóa trước khi thực hiện
+        if (confirm('Bạn có chắc chắn muốn xóa hóa đơn này?')) {
+            // Gọi hàm xóa
+            deleteInvoice(invoiceId);
+        }
+    });
+
+    // Khi bấm vào nút "Hủy"
+    $(document).on("click", ".cancelInvoiceBtn", function () {
+        console.log("Nút 'Hủy' đã được bấm"); // Log kiểm tra
+
+        var invoiceId = $(this).data("id"); // Lấy ID của hóa đơn từ thuộc tính data-id
+
+        // Xác nhận hành động hủy
+        if (confirm("Bạn có chắc chắn muốn hủy hóa đơn này?")) {
+            // Gửi yêu cầu AJAX đến server
+            $.ajax({
+                url: `http://localhost:8080/api/hoadon/status/${invoiceId}`,
+                type: "PUT",
+                contentType: "application/json",
+                data: JSON.stringify({
+                    trangThai: "Cancle" // Cập nhật trạng thái thành "Đã hủy"
+                }),
+                success: function (response) {
+                    // Nếu thành công, cập nhật giao diện
+                    alert("Hóa đơn đã được hủy!");
+                    // Có thể thêm logic để cập nhật lại trạng thái trên giao diện nếu cần
+                    location.reload(); // Reload lại trang để thấy thay đổi
+                },
+                error: function (error) {
+                    // Nếu có lỗi, hiển thị thông báo lỗi
+                    alert("Có lỗi xảy ra khi hủy hóa đơn!");
+                }
+            });
+        }
+    });
 
     function renderPaginatio(totalPages, currentPage) {
-        console.log(totalPages +"trang");
+        console.log(totalPages + "trang");
         let paginationHtml = '';
         for (let i = 0; i < totalPages; i++) {
             paginationHtml += `<li class="page-item ${i === currentPage ? 'active' : ''}">
@@ -133,8 +201,8 @@ $(document).ready(function () {
     });
 
     loadInvoiceData();
-    
-    
+
+
 
     $(document).on('hidden.bs.modal', '#editInvoiceModal', function () {
         console.log('Modal đã đóng, tải lại dữ liệu...');
@@ -276,12 +344,18 @@ function registerEdit() {
 $('#productTableBody').on('click', 'tr', function () {
     const productId = $(this).data('id'); // Lấy id từ data-id của dòng
     const currentStatus = $(this).data('status'); // Lấy trạng thái hiện tại từ data-status
-
+    console.log(currentStatus, "okokok");
     // Hiển thị khu vực cập nhật trạng thái
     $('#statusUpdateContainer').show();
 
     // Lắng nghe sự kiện khi nhấn nút "Cập nhật trạng thái"
     $('#updateStatusBtn').off('click').on('click', function () {
+
+        // if (currentStatus === true) {
+        //     // Nếu trạng thái hiện tại là true (Đã Thanh Toán), không cho phép cập nhật
+        //     alert('Không thể cập nhật trạng thái vì hóa đơn đã được thanh toán!');
+        //     return; // Kết thúc xử lý tại đây
+        // }
         const newStatus = !currentStatus; // Lật trạng thái (nếu true thành false, ngược lại)
 
         // Gửi yêu cầu cập nhật trạng thái chi tiết hóa đơn
@@ -314,3 +388,8 @@ $('#productTableBody').on('click', 'tr', function () {
         });
     });
 });
+
+
+
+// Gắn sự kiện click vào các nút Xóa
+

@@ -281,6 +281,29 @@ $(document).ready(function () {
 
             var hasError = false;
 
+            const today = new Date().toISOString().split('T')[0];
+            const startDate = discountData.ngayBatDau;
+            const endDate = discountData.ngayKetThuc;
+            
+            // Kiểm tra dữ liệu
+            if (!startDate) {
+                $('#stDateError').text('Ngày bắt đầu không được để trống.');
+                hasError = true;
+            } else if (startDate < today) {
+                $('#stDateError').text('Ngày bắt đầu không được trước ngày hôm nay.');
+                hasError = true;
+            }
+
+            if (!endDate) {
+                $('#enDateError').text('Ngày kết thúc không được để trống.');
+                hasError = true;
+            } else if (endDate < today) {
+                $('#enDateError').text('Ngày kết thúc không được trước ngày hôm nay.');
+                hasError = true;
+            } else if (startDate > endDate) {
+                $('#enDateError').text('Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.');
+                hasError = true;
+            }
             // Kiểm tra các trường thông tin
             if (discountData.ma === "") {
                 $("#maError").text("Mã giảm giá không được để trống.");
@@ -313,10 +336,10 @@ $(document).ready(function () {
                 hasError = true;
             }
 
-            if (!discountData.ngayBatDau || !discountData.ngayKetThuc || (discountData.ngayBatDau) > (discountData.ngayKetThuc)) {
-                alert('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.');
-                hasError = true;
-            }
+            // if (!discountData.ngayBatDau || !discountData.ngayKetThuc || (discountData.ngayBatDau) > (discountData.ngayKetThuc)) {
+            //     alert('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.');
+            //     hasError = true;
+            // }
 
             if (discountData.soLansd <= 0) {
                 $("#LansdError").text("Số lần sử dụng phải lớn hơn 0.");
@@ -380,6 +403,32 @@ $(document).ready(function () {
         const usageLimit = $('#usageLimit').val().trim();
         const status = $('#status').val();
         let minTotal = $('#minValue').val().trim(); // Lấy giá trị minValue
+        let hasError = false;
+
+        // Lấy ngày hiện tại
+        const today = new Date().toISOString().split('T')[0];
+
+
+        // Kiểm tra dữ liệu
+        if (!startDate) {
+            $('#startDateError').text('Ngày bắt đầu không được để trống.');
+            hasError = true;
+        } else if (startDate < today) {
+            $('#startDateError').text('Ngày bắt đầu không được trước ngày hôm nay.');
+            hasError = true;
+        }
+
+        if (!endDate) {
+            $('#endDateError').text('Ngày kết thúc không được để trống.');
+            hasError = true;
+        } else if (endDate < today) {
+            $('#endDateError').text('Ngày kết thúc không được trước ngày hôm nay.');
+            hasError = true;
+        } else if (startDate > endDate) {
+            $('#endDateError').text('Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu.');
+            hasError = true;
+        }
+
 
         if (!minTotal) {
             minTotal = 0;
@@ -389,9 +438,6 @@ $(document).ready(function () {
         } else {
             $('#minValueError').text('');
         }
-
-        // Kiểm tra dữ liệu
-        let hasError = false;
 
         // if (!minTotal) {
         //     minTotal = 0;
@@ -416,10 +462,10 @@ $(document).ready(function () {
             $('#nameError').text('');
         }
 
-        if (!startDate || !endDate || (startDate) > (endDate)) {
-            alert('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.');
-            hasError = true;
-        }
+        // if (!startDate || !endDate || (startDate) > (endDate)) {
+        //     alert('Ngày bắt đầu phải nhỏ hơn hoặc bằng ngày kết thúc.');
+        //     hasError = true;
+        // }
 
         // if (!discountPercentage || isNaN(discountPercentage) || Number(discountPercentage) <= 0) {
         //     $('#giamGiaError').text('Giảm giá phải là số và lớn hơn 0');

@@ -114,7 +114,7 @@
                                 </thead>
                                 <tbody id="discountTableBody">
 
-                                    <div class="modal fade" id="editDiscountModal" tabindex="-1" role="dialog" style="max-width: 70%; margin-left: 250px;"
+                                    <div class="modal fade" id="editDiscountModal" tabindex="-1" role="dialog" style="max-width: 95%; margin-left: 75px;"
                                     aria-labelledby="editDiscountModalLabel" aria-hidden="true">
                                     <div class="modal-dialog " role="document">
                                         <div class="modal-content">
@@ -223,7 +223,7 @@
                                 </div>
 
 
-                                    <div class="modal fade" id="addDiscountModal" tabindex="-1" role="dialog" style="max-width: 70%; margin-left: 250px;"
+                                    <div class="modal fade" id="addDiscountModal" tabindex="-1" role="dialog" style="max-width: 95%; margin-left: 75px;"
                                         aria-labelledby="addDiscountModalLabel" aria-hidden="true">
                                         <div class="modal-dialog " role="document">
                                             <div class="modal-content">
@@ -261,11 +261,15 @@
                                                                 <label for="startDate">Ngày Bắt Đầu</label>
                                                                 <input type="date" class="form-control"
                                                                     id="startDate" name="ngayBatDau" required>
+                                                                    <span id="startDateError" class="text-danger"></span>
+
                                                             </div>
                                                             <div class="col-md-6">
                                                                 <label for="endDate">Ngày Kết Thúc</label>
                                                                 <input type="date" class="form-control"
                                                                     id="endDate" name="ngayKetThuc" required>
+                                                                    <span id="endDateError" class="text-danger"></span>
+
                                                             </div>
                                                         </div>
 

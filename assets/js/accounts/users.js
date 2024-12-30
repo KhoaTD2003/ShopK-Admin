@@ -10,10 +10,10 @@ $(document).ready(function () {
         const requestData = {
             role: roLe,
             pageNumber: pageNumber,
-            hoTen: searchKeyword,
+            tenTaiKhoan: searchKeyword,
             sdt: searchKeyword,
             trangThai: selectedStatus !== null ? selectedStatus : '', // Lấy trạng thái từ giao diện
-        };
+            };
 
         $.ajax({
             url: `http://localhost:8080/api/loginAuth/customer`, // Sửa lại URL theo yêu cầu
@@ -35,13 +35,11 @@ $(document).ready(function () {
                 data.content.forEach(function (user, index) {
                     tableRows += `
                         <tr>
-                            <td>${index + 1}</td> <!-- ID (UUID) -->
-                            <td>${user.maNguoiDung}</td> <!-- Mã người dùng, thay thế cho user.id -->
-                            <td>${user.hoTen}</td> <!-- Họ tên -->
-                            <td>${user.namSinh || 'N/A'}</td> <!-- Năm sinh (Nếu có) -->
-                            <td>${user.diaChi || 'N/A'}</td> <!-- Địa chỉ -->
-                            <td>${user.email || 'N/A'}</td> <!-- Email -->
-                            <td>${user.sdt || 'N/A'}</td> <!-- Số điện thoại -->
+                                <td>${index + 1}</td>
+                                <td>${user.tenTaiKhoan}</td>
+                                <td>${user.sdt}</td>
+                                <td>${user.email || 'N/A'}</td>
+
                             <td>
                                 ${role === 'Admin' ?
                             `<i id="trangThaiNguoiDung_${user.maNguoiDung}" class="fas fa-toggle-${user.trangThai ? 'on' : 'off'} status-toggle" style="font-size: 24px; color: ${user.trangThai ? 'green' : 'gray'}; cursor: pointer;" data-id="${user.id}"></i>`
@@ -204,12 +202,11 @@ $(document).ready(function () {
             success: function (data) {
 
                 $('#id').val(data.id);  // Populate ID
-                $('#hoTen').val(data.hoTen);
-                $('#maNguoiDung').val(data.maNguoiDung); // Populate hidden field
-                $('#namSinh').val(data.namSinh);
-                $('#diaChi').val(data.diaChi);
+                $('#hoTen').val(data.tenTaiKhoan);
                 $('#email').val(data.email);
                 $('#sdt').val(data.sdt);
+                $('#role').val(data.role);
+                $('#password').val(data.matKhau);
 
                 $('#editUserModal').modal('show');
             },
@@ -256,12 +253,12 @@ $(document).ready(function () {
         }
 
         const updatedUser = {
-            hoTen: $('#hoTen').val(),
-            namSinh: $('#namSinh').val(),
-            diaChi: $('#diaChi').val(),
+            tenTaiKhoan: $('#hoTen').val(),
             email: $('#email').val(),
             sdt: $('#sdt').val(),
-            maNguoiDung: $('#maNguoiDung').val(),  // Include maNguoiDung if needed
+            id: $('#id').val() , // Include maNguoiDung if needed
+            role: $('#role').val(),  // Include maNguoiDung if needed
+            matKhau:$('#password').val(), // Include maNguoiDung if needed
         };
 
         // // Gửi yêu cầu cập nhật role
@@ -292,6 +289,8 @@ $(document).ready(function () {
                     processData: false,
                     success: function (response) {
                         alert('Đã nâng cấp người dùng thành nhân viên');
+                        loadUserData();  // Tải lại dữ liệu người dùng
+
                     },
                     error: function () {
                         // alert('Có lỗi xảy ra khi cập nhật role người dùng.');

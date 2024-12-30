@@ -82,12 +82,9 @@
                                     <thead>
                                         <tr>
                                             <th>STT</th>
-                                            <th>UserName</th>
-                                            <th>Họ Tên </th>
-                                            <th>Ngày Sinh</th>
-                                            <th>Địa Chỉ </th>
-                                            <th>Email</th>
+                                            <th>Tên Tài Khoản </th>
                                             <th>Số Điện Thoại</th>
+                                            <th>Email</th>
                                             <th>Status</th>
                                             <th>Action</th>
                                         </tr>
@@ -123,30 +120,22 @@
                                                 <div class="modal-body">
                                                     <form id="editEmployeeForm">
                                                         <div class="form-group">
-                                                            <label for="hoTen">ID</label>
+                                                            <label for="hoTen" hidden>ID</label>
                                                             <input type="text" class="form-control" id="id" name="id"
                                                                 readonly hidden>
                                                         </div>
                                                         <div class="form-group">
-                                                            <label for="hoTen">UserName</label>
-                                                            <input type="text" class="form-control" id="maNguoiDung"
-                                                                name="maNguoiDung" placeholder="Nhập mã người dùng">
+                                                            <label for="namSinh">Role</label>
+                                                            <input type="text" class="form-control" id="role"
+                                                                name="role" placeholder="Nhập năm sinh">
                                                         </div>
+                                                       
                                                         <div class="form-group">
-                                                            <label for="hoTen">Họ tên</label>
+                                                            <label for="hoTen">Tên Tài Khoản</label>
                                                             <input type="text" class="form-control" id="hoTen"
                                                                 name="hoTen" placeholder="Nhập họ tên">
                                                         </div>
-                                                        <div class="form-group">
-                                                            <label for="namSinh">Năm sinh</label>
-                                                            <input type="text" class="form-control" id="namSinh"
-                                                                name="namSinh" placeholder="Nhập năm sinh">
-                                                        </div>
-                                                        <div class="form-group">
-                                                            <label for="diaChi">Địa chỉ</label>
-                                                            <input type="text" class="form-control" id="diaChi"
-                                                                name="diaChi" placeholder="Nhập địa chỉ">
-                                                        </div>
+                                                       
                                                         <div class="form-group">
                                                             <label for="email">Email</label>
                                                             <input type="email" class="form-control" id="email"
@@ -156,6 +145,11 @@
                                                             <label for="sdt">Số điện thoại</label>
                                                             <input type="text" class="form-control" id="sdt" name="sdt"
                                                                 placeholder="Nhập số điện thoại">
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="diaChi">Mật Khẩu</label>
+                                                            <input type="text" class="form-control" id="password"
+                                                                name="password" placeholder="Nhập địa chỉ">
                                                         </div>
                                                     </form>
                                                 </div>
