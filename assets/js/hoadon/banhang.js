@@ -149,11 +149,13 @@ $(document).ready(function () {
 
                     if (discount.soLansd > 0 && discount.trangThai == true && endDate >= now) { // Kiểm tra nếu số lần sử dụng lớn hơn 0
                         // discountSelect.append(`<option value="${discount.ten}">Giảm ${discount.giamGia}</option>`);
-                        const value = discount.giamGia.replace('%', '').trim(); // Lấy giá trị giảm giá
-                        // const option = `<option value="${value}" data-id="${discount.ma}">${discount.ten} - ${discount.giamGia}% (Còn ${discount.soLansd} lượt)</option>`;
+                        const isPercentage = discount.giamGia.includes('%');
+
+                        // Nếu là phần trăm, không cần format, nếu là số tiền thì định dạng
+                        const discountValue = isPercentage ? discount.giamGia : formatCurrency(discount.giamGia);                        // const option = `<option value="${value}" data-id="${discount.ma}">${discount.ten} - ${discount.giamGia}% (Còn ${discount.soLansd} lượt)</option>`;
 
                         const option = `<option value="${discount.giamGia}" data-id="${discount.ma}" data-min="${discount.giaTriMin}">
-                        ${discount.ten} - ${discount.giamGia} Đơn Min ${formatCurrency(discount.giaTriMin)} (Còn ${discount.soLansd} lượt)</option>`;
+                        ${discount.ten} - ${discountValue} Đơn Min ${formatCurrency(discount.giaTriMin)} (Còn ${discount.soLansd} lượt)</option>`;
 
                         discountSelect.append(option);
                     }
@@ -271,8 +273,121 @@ $(document).ready(function () {
                 success: function (response) {
                     alert('Thanh toán thành công!');
                     console.log('Kết quả thanh toán:', response);
-                    location.reload();
+                    // location.reload();
                     loadDiscounts();
+                    // <p>Ngày: ${new Date().toLocaleDateString('vi-VN')}</p>
+
+                    const invoiceHtml = `
+                    <div id="invoiceContainer" class="invoice-container">
+                        <div class="header">
+                           <h1>HÓA ĐƠN BÁN HÀNG KSHOP</h1>
+                            <p>Địa chỉ: Fpoly Hà Nội , Phường Xuân Phương, Quận Nam Từ Liêm, Hà Nội</p>
+                            <p>Số điện thoại: 0988 168 168</p>
+                            <p>Ngày: ${getCurrentDateTime()}</p>
+                        </div>
+
+                        <div class="details">
+                            <p><strong>Tên khách hàng:</strong> ${customerName}</p>
+                            <p><strong>Số điện thoại:</strong> ${customerPhone}</p>
+                            <p><strong>Ghi Chú:</strong> In Store</p>
+
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${cart.map((product, index) => `
+                                    <tr>
+                                        <td>${index + 1}</td>
+                                        <td>${product.prodName}</td>
+                                        <td>${product.quantity}</td>
+                                        <td>${formatCurrency(product.price)}</td>
+                                        <td>${formatCurrency(product.quantity * product.price)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+
+                        <div class="totals">
+                            <p><strong>Tổng tiền hàng:</strong> ${formatCurrency(totalAmount)}</p>
+                            <p><strong>Giảm giá:</strong> ${formatCurrency(totalAmount - finalAmount)}</p>
+                            <p><strong>Thành tiền:</strong> ${formatCurrency(finalAmount)}</p>
+                        </div>
+
+                        <div class="footer">
+                            <p>Cảm ơn quý khách đã mua hàng tại KSHOP!</p>
+                            <p>Hẹn gặp lại!</p>
+                        </div>
+                    </div>
+                    <button id="printInvoiceBtn" class="btn btn-primary">In hóa đơn</button>`;
+
+                    // Hiển thị hóa đơn trong modal
+                    $('#invoiceModalBody').html(invoiceHtml);
+                    $('#invoiceModal').modal('show');
+
+                    // Xử lý nút In hóa đơn
+                    $('#printInvoiceBtn').click(function () {
+                        const invoiceContent = document.getElementById('invoiceContainer').innerHTML;
+                        const printWindow = window.open('', '_blank');
+                        printWindow.document.open();
+                        printWindow.document.write(`
+                            <html>
+                                <head>
+                                    <title>In hóa đơn</title>
+                                    <style>
+                                    body {
+                                        font-family: Arial, sans-serif;
+                                        margin: 0;
+                                        padding: 20px;
+                                        background-color: #f9f9f9;
+                                        color: #333;
+                                    }
+                                    .invoice-container {
+                                        max-width: 800px;
+                                        margin: 0 auto;
+                                        background-color: #fff;
+                                        padding: 20px;
+                                        border: 1px solid #ddd;
+                                        border-radius: 8px;
+                                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                                    }
+                                    .header, .footer {
+                                        text-align: center;
+                                        margin-bottom: 20px;
+                                    }
+                                    table {
+                                        width: 100%;
+                                        border-collapse: collapse;
+                                    }
+                                    th, td {
+                                        border: 1px solid #ddd;
+                                        padding: 8px;
+                                        text-align: center;
+                                    }
+                                    th {
+                                        background-color: #007bff;
+                                        color: #fff;
+                                        font-weight: bold;
+                                    }
+                                </style>
+                                </head>
+                            <body onload="window.print(); window.close();">
+                                    ${invoiceContent}
+                                </body>
+                            </html>
+                        `);
+                        printWindow.document.close();
+                        printWindow.print();
+                    });
+
                     // Xóa giỏ hàng và làm mới giao diện
                     localStorage.removeItem('cart');
                     $('#cartItems').empty();
@@ -291,6 +406,22 @@ $(document).ready(function () {
         }
     });
 });
+
+$('#closeButton, .close').click(function () {
+    $('#invoiceModal').modal('hide');
+});
+
+// Hàm lấy ngày giờ hiện tại theo định dạng dd/MM/yyyy HH:mm:ss
+function getCurrentDateTime() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = String(now.getMonth() + 1).padStart(2, '0'); // Tháng tính từ 0
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
 
 function updateTotalAmount() {
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -404,29 +535,48 @@ function displayProducts(pageNumber = 1) {
 
 function buildProductHtml(product) {
     const formattedPrice = product.giaBan.toLocaleString('vi-VN');
+  // <div class="col-md-3 mb-3">
+        //     <div class="card" style="width: 100%; max-width: 200px;">
+        //         <img src="/assets/${product.anh}" class="card-img-top"  style="width: 100%; height: 250px; max-height: 150px; object-fit: cover;">
+        //         <div class="card-body p-2">
+        //             <h6 class="card-title" style="font-size: 0.9rem;">${product.tenSP}</h6>
+        //             <p class="card-text" style="font-size: 0.8rem;">Giá: ${formattedPrice} VND</p> <!-- Hiển thị giá đã được định dạng -->
+                   
+        //             <button class="btn btn-primary btn-sm" onclick="addToCart({
+        //                 prodId: '${product.idSP}', 
+        //                 prodName: '${product.tenSP}', 
+        //                 price: ${product.giaBan}, 
+        //                 stock:${product.stock},
+        //                 quantity: 1
+        //             })">Thêm vào giỏ</button>
+        //         </div>
+        //     </div>
+        // </div>
 
     return `
+      
         <div class="col-md-3 mb-3">
-            <div class="card" style="width: 100%; max-width: 200px;">
-                <img src="/assets/${product.anh}" class="card-img-top"  style="width: 100%; height: auto; max-height: 150px; object-fit: cover;">
-                <div class="card-body p-2">
-                    <h6 class="card-title" style="font-size: 0.9rem;">${product.tenSP}</h6>
-                    <p class="card-text" style="font-size: 0.8rem;">Giá: ${formattedPrice} VND</p> <!-- Hiển thị giá đã được định dạng -->
-                    <p class="card-text" style="font-size: 0.8rem;">Thương hiệu: ${product.thuongHieu.ten}</p>
-                    <p class="card-text" style="font-size: 0.8rem;">Màu sắc: ${product.mauSac.ten}</p>
-                    <button class="btn btn-primary btn-sm" onclick="addToCart({
-                        prodId: '${product.idSP}', 
-                        prodName: '${product.tenSP}', 
-                        price: ${product.giaBan}, 
-                        stock:${product.stock},
-                        quantity: 1
-                    })">Thêm vào giỏ</button>
-                </div>
-            </div>
+    <div class="card" style="width: 100%; max-width: 200px; display: flex; flex-direction: column; height: 100%;">
+        <img src="/assets/${product.anh}" class="card-img-top" style="width: 100%; height: 250px; max-height: 150px; object-fit: cover;">
+        <div class="card-body p-2 d-flex flex-column" style="flex-grow: 1;">
+            <h6 class="card-title" style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${product.tenSP}</h6>
+            <p class="card-text" style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Thương hiệu: ${product.thuongHieu.ten}</p>
+            <p class="card-text" style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Giá: ${formattedPrice} VND</p> <!-- Hiển thị giá đã được định dạng -->
+            <button class="btn btn-primary btn-sm" onclick="addToCart({
+                prodId: '${product.idSP}', 
+                prodName: '${product.tenSP}', 
+                price: ${product.giaBan}, 
+                stock:${product.stock},
+                quantity: 1
+            })">Thêm vào giỏ</button>
         </div>
+    </div>
+</div>
+
     `;
 }
-
+// <p class="card-text" style="font-size: 0.8rem;">Thương hiệu: ${product.thuongHieu.ten}</p>
+// <p class="card-text" style="font-size: 0.8rem;">Màu sắc: ${product.mauSac.ten}</p>
 // Hàm cập nhật phân trang
 function updatePagination(totalPages, currentPage) {
     const paginationContainer = $("#paginationContainer");
@@ -611,7 +761,7 @@ function createInvoice() {
         pendingInvoices.unshift(invoice);  // Thêm hóa đơn mới vào đầu danh sách
 
         // Giới hạn số lượng hóa đơn chờ (tối đa 5 hóa đơn)
-        if (pendingInvoices.length > 5) {
+        if (pendingInvoices.length > 10) {
             pendingInvoices.pop();  // Xóa hóa đơn cũ nhất nếu có hơn 5 hóa đơn
         }
 

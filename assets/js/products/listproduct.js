@@ -74,7 +74,7 @@ $(document).ready(function () {
                     console.log('Không có dữ liệu nào được tìm thấy.'); // Thông báo không có dữ liệu
                     tableRows = `
                     <tr>
-                        <td colspan="11" class="text-center" style="font-weight: bold;
+                        <td colspan="15" class="text-center" style="font-weight: bold;
                                  color: #555;">NO DATA FOUND !</td>                
                     </tr>
                     `; 

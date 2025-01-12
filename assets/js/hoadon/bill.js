@@ -30,49 +30,72 @@ $(document).ready(function () {
                     `;
                 } else {
                     data.content.forEach(function (invoice, index) {
-                        if ((trangThai === '' && invoice.trangThai !== 'Cancle') || (trangThai === 'Cancle' && invoice.trangThai === 'Cancle')) {
-
-                        tableRows += `
-                    <tr>
-                        <td>${index + 1}</td> <!-- Thêm STT -->
-                        <td>${invoice.maHoaDon}</td> <!-- Mã Hóa đơn -->
-                        <td>${invoice.tenKH}</td> <!-- Tên Khách -->
-                        <td>${invoice.sdt}</td> <!-- Tên Khách -->
-                        <td>${formatDate(new Date(invoice.ngayTao))}</td> <!-- Ngày tạo -->
-                        <td>${formatCurrency(invoice.tongTien)}</td> <!-- Tổng tiền -->
-                        <td>${formatCurrency(invoice.tienGiam)}</td> <!-- Tiền giảm -->
-                        <td>${formatCurrency(invoice.tienThu)}</td> <!-- Tiền thu -->
-                        <td>
-                             ${invoice.ghiChu === 'Online'
-                                ? '<i class="fas fa-globe" style="color: blue;"></i> Online'
-                                : '<i class="fas fa-store" style="color: green;"></i> In-Store'}
-                        </td>
-
-                        <td>${invoice.trangThai || 'N/A'}</td> <!-- Trạng thái tài khoản -->
-                      
-                        <td class="text-end">
-                            ${invoice.trangThai !== 'Cancle'
-                                ? `
-                            <button class="btn btn-outline-info btn-rounded editInvoiceBtn" data-id="${invoice.id}">
-                                <i class="fas fa-pen"></i> Xem
-                            </button>
-                            `
-                                : ''
-                            }
-                    
-                        ${invoice.trangThai === 'Chua Thanh Toán' ? `
-                            <button class="btn btn-outline-danger btn-rounded cancelInvoiceBtn" data-id="${invoice.id}">
-                                <i class="fas fa-times"></i> Cancel
-                            </button> `
-                                : invoice.trangThai === 'Cancle' ? `
-                            <button class="btn btn-outline-danger btn-rounded deleteInvoiceBtn" data-id="${invoice.id}">
-                                <i class="fas fa-trash"></i> Xóa
-                            </button>  `: ''}
-                            </td>
-                        </tr>
-                    `;
+                        // Logic lọc theo trạng thái:
+                        // Trường hợp trạng thái không được chọn (trangThai === '')
+                        if (trangThai === 'Cancle' && invoice.trangThai === 'Cancle') {
+                            tableRows += buildTableRow(invoice, index);
+                        }
+                        else if (trangThai === '' && (invoice.trangThai === 'Chua Thanh Toán' || invoice.trangThai === 'Ðã Thanh Toán')) {
+                            // Hiển thị hóa đơn "Chưa Thanh Toán" và "Đã Thanh Toán"
+                            tableRows += buildTableRow(invoice, index);
+                        }
+                        // Trường hợp lọc theo trạng thái "Đã Hủy"
+                        // Trường hợp lọc theo trạng thái "Đã Thanh Toán"
+                        else if (trangThai === 'Ðã Thanh Toán' && invoice.trangThai === 'Ðã Thanh Toán') {
+                            tableRows += buildTableRow(invoice, index);
+                        }
+                        // Trường hợp lọc theo trạng thái "Chưa Thanh Toán"
+                        else if (trangThai === 'Chua Thanh Toán' && invoice.trangThai === 'Chua Thanh Toán') {
+                            tableRows += buildTableRow(invoice, index);
                         }
                     });
+                    // data.content.forEach(function (invoice, index) {
+                    //     if ((trangThai === '' && (invoice.trangThai === 'Chua Thanh Toán' || invoice.trangThai === 'Ðã Thanh Toán')) || 
+                    //     (trangThai === 'Cancle' && invoice.trangThai === 'Cancle'))  
+                    //     // if ((trangThai === '' && invoice.trangThai !== 'Cancle') || (trangThai === 'Cancle' && invoice.trangThai === 'Cancle'))
+                    //          {
+
+                    //     tableRows += `
+                    // <tr>
+                    //     <td>${index + 1}</td> <!-- Thêm STT -->
+                    //     <td>${invoice.maHoaDon}</td> <!-- Mã Hóa đơn -->
+                    //     <td>${invoice.tenKH}</td> <!-- Tên Khách -->
+                    //     <td>${invoice.sdt}</td> <!-- Tên Khách -->
+                    //     <td>${formatDate(new Date(invoice.ngayTao))}</td> <!-- Ngày tạo -->
+                    //     <td>${formatCurrency(invoice.tongTien)}</td> <!-- Tổng tiền -->
+                    //     <td>${formatCurrency(invoice.tienGiam)}</td> <!-- Tiền giảm -->
+                    //     <td>${formatCurrency(invoice.tienThu)}</td> <!-- Tiền thu -->
+                    //     <td>
+                    //          ${invoice.ghiChu === 'Online'
+                    //             ? '<i class="fas fa-globe" style="color: blue;"></i> Online'
+                    //             : '<i class="fas fa-store" style="color: green;"></i> In-Store'}
+                    //     </td>
+
+                    //     <td>${invoice.trangThai || 'N/A'}</td> <!-- Trạng thái tài khoản -->
+
+                    //     <td class="text-end">
+                    //         ${invoice.trangThai !== 'Cancle'
+                    //             ? `
+                    //         <button class="btn btn-outline-info btn-rounded editInvoiceBtn" data-id="${invoice.id}">
+                    //             <i class="fas fa-pen"></i> Xem
+                    //         </button>
+                    //         `
+                    //             : ''
+                    //         }
+
+                    //     ${invoice.trangThai === 'Chua Thanh Toán' ? `
+                    //         <button class="btn btn-outline-danger btn-rounded cancelInvoiceBtn" data-id="${invoice.id}">
+                    //             <i class="fas fa-times"></i> Cancel
+                    //         </button> `
+                    //             : invoice.trangThai === 'Cancle' ? `
+                    //         <button class="btn btn-outline-danger btn-rounded deleteInvoiceBtn" data-id="${invoice.id}">
+                    //             <i class="fas fa-trash"></i> Xóa
+                    //         </button>  `: ''}
+                    //         </td>
+                    //     </tr>
+                    // `;
+                    //     }
+                    // });
                 }
 
                 $('#invoiceTableBody').html(tableRows);
@@ -87,6 +110,61 @@ $(document).ready(function () {
         });
     }
 
+    function buildTableRow(invoice, index) {
+        return `
+            <tr>
+                <td>${index + 1}</td> <!-- Thêm STT -->
+                <td>${invoice.maHoaDon}</td> <!-- Mã Hóa đơn -->
+                <td>${invoice.tenKH}</td> <!-- Tên Khách -->
+                <td>${invoice.sdt}</td> <!-- SĐT -->
+                <td>${formatDate(new Date(invoice.ngayTao))}</td> <!-- Ngày tạo -->
+                <td>${formatCurrency(invoice.tongTien)}</td> <!-- Tổng tiền -->
+                <td>${formatCurrency(invoice.tienGiam)}</td> <!-- Tiền giảm -->
+                <td>${formatCurrency(invoice.tienThu)}</td> <!-- Tiền thu -->
+                <td>
+                     ${invoice.ghiChu === 'Online'
+                ? '<i class="fas fa-globe" style="color: blue;"></i> Online'
+                : '<i class="fas fa-store" style="color: green;"></i> In-Store'}
+                </td>
+                <td>${invoice.trangThai || 'N/A'}</td> <!-- Trạng thái tài khoản -->
+              
+                <td class="text-end">
+                    ${invoice.trangThai !== 'Cancle'
+                ? `
+                    <button class="btn btn-outline-info btn-rounded editInvoiceBtn" data-id="${invoice.id}">
+                        <i class="fas fa-pen"></i> Xem
+                    </button>
+        
+                    `
+                : ''
+            }
+                    ${invoice.trangThai !== 'Cancle' &&  invoice.trangThai !== 'Chua Thanh Toán'
+                ? `
+                    <button class="btn btn-outline-success btn-rounded printInvoiceBtn" data-id="${invoice.id}">
+                        <i class="fas fa-print"></i> In
+                    </button>
+        
+                    `
+                : ''
+            }
+     
+                ${invoice.trangThai === 'Chua Thanh Toán' ? `
+                    <button class="btn btn-outline-danger btn-rounded cancelInvoiceBtn" data-id="${invoice.id}">
+                        <i class="fas fa-times"></i> Cancel
+                    </button> `
+                : invoice.trangThai === 'Cancle' ? `
+                    <button class="btn btn-outline-danger btn-rounded deleteInvoiceBtn" data-id="${invoice.id}">
+                        <i class="fas fa-trash"></i> Xóa
+                    </button> ` : ''
+            }
+                    
+                    </td>
+                </tr>
+
+
+        `;
+    }
+
     $('#sortStatus').change(function () {
         const trangThai = $(this).val(); // Lấy giá trị trạng thái được chọn
         const searchKeyword = $('#searchKeyword').val(); // Lấy từ khóa tìm kiếm
@@ -95,6 +173,7 @@ $(document).ready(function () {
         console.log("Trang Thai Chon:", trangThai);  // Kiểm tra trạng thái đã chọn
 
         loadInvoiceData(0, searchKeyword, ghiChu, trangThai);  // Truyền giá trị trạng thái vào API
+
     });
 
 
@@ -128,21 +207,21 @@ $(document).ready(function () {
         $.ajax({
             url: `http://localhost:8080/api/hoadon/${invoiceId}`,  // URL của API xóa hóa đơn, thay đổi theo API của bạn
             type: 'DELETE',
-            success: function(response) {
+            success: function (response) {
                 // Nếu xóa thành công, cập nhật lại danh sách hóa đơn
                 alert('Hóa đơn đã được xóa!');
                 loadInvoiceData(0, '', '', '');  // Gọi lại hàm loadInvoiceData để tải lại danh sách
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 alert('Có lỗi xảy ra khi xóa hóa đơn.');
             }
         });
     }
 
-    $(document).on('click', '.deleteInvoiceBtn', function() {
+    $(document).on('click', '.deleteInvoiceBtn', function () {
         // Lấy id của hóa đơn từ thuộc tính data-id của nút
         var invoiceId = $(this).data('id');
-        
+
         // Xác nhận việc xóa trước khi thực hiện
         if (confirm('Bạn có chắc chắn muốn xóa hóa đơn này?')) {
             // Gọi hàm xóa
@@ -293,6 +372,7 @@ function registerEdit() {
                 // Điền ID hóa đơn vào input ẩn
                 $('#invoiceId').val(id);
 
+
                 // Hiển thị modal
                 $('#editInvoiceModal').modal('show');
 
@@ -391,5 +471,125 @@ $('#productTableBody').on('click', 'tr', function () {
 
 
 
-// Gắn sự kiện click vào các nút Xóa
+$(document).on('click', '.printInvoiceBtn', function () {
+    const invoiceId = $(this).data('id');
 
+    // Gửi yêu cầu AJAX đầu tiên để lấy thông tin hóa đơn
+    $.ajax({
+        url: `http://127.0.0.1:8080/api/hoadon/${invoiceId}`, // API thông tin hóa đơn
+        type: 'GET',
+        success: function (invoiceInfo) {
+            // Gửi yêu cầu AJAX thứ hai để lấy danh sách sản phẩm
+            $.ajax({
+                url: `http://127.0.0.1:8080/api/hoadon/billdetail/${invoiceId}`, // API chi tiết sản phẩm
+                type: 'GET',
+                success: function (productList) {
+                    // Tạo nội dung hóa đơn
+                    const invoiceHtml = `
+                        <div id="invoiceContainer" class="invoice-container">
+                            <div class="header">
+                                <h1>HÓA ĐƠN BÁN HÀNG KSHOP</h1>
+                                <p>Địa chỉ: Fpoly Hà Nội, Phường Xuân Phương, Quận Nam Từ Liêm, Hà Nội</p>
+                                <p>Số điện thoại: 0988 168 168</p>
+                                <p>Ngày: ${formatDate(new Date(invoiceInfo.ngayTao))}</p>
+                            </div>
+                            <div class="details">
+                                <p><strong>Tên khách hàng:</strong> ${invoiceInfo.tenKH}</p>
+                                <p><strong>Số điện thoại:</strong> ${invoiceInfo.sdt}</p>
+                                <p><strong>Ghi chú:</strong> ${invoiceInfo.ghiChu || "Không có"}</p>
+                            </div>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Tên sản phẩm</th>
+                                        <th>Số lượng</th>
+                                        <th>Đơn giá</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${productList.map((product, index) => `
+                                        <tr>
+                                            <td>${index + 1}</td>
+                                            <td>${product.tenSanPham}</td>
+                                            <td>${product.soLuong}</td>
+                                            <td>${formatCurrency(product.donGia)}</td>
+                                            <td>${formatCurrency(product.soLuong * product.donGia)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            <div class="totals">
+                                <p><strong>Tổng tiền hàng:</strong> ${formatCurrency(invoiceInfo.tongTien)}</p>
+                                <p><strong>Giảm giá:</strong> ${formatCurrency(invoiceInfo.tienGiam)}</p>
+                                <p><strong>Thành tiền:</strong> ${formatCurrency(invoiceInfo.tienThu)}</p>
+                            </div>
+                            <div class="footer">
+                                <p>Cảm ơn quý khách đã mua hàng tại KSHOP!</p>
+                                <p>Hẹn gặp lại!</p>
+                            </div>
+                        </div>
+                    `;
+
+                    // In hóa đơn
+                    const printWindow = window.open('', '_blank');
+                    printWindow.document.open();
+                    printWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>In hóa đơn</title>
+                                <style>
+                                    body {
+                                        font-family: Arial, sans-serif;
+                                        margin: 0;
+                                        padding: 20px;
+                                        background-color: #f9f9f9;
+                                        color: #333;
+                                    }
+                                    .invoice-container {
+                                        max-width: 800px;
+                                        margin: 0 auto;
+                                        background-color: #fff;
+                                        padding: 20px;
+                                        border: 1px solid #ddd;
+                                        border-radius: 8px;
+                                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                                    }
+                                    .header, .footer {
+                                        text-align: center;
+                                        margin-bottom: 20px;
+                                    }
+                                    table {
+                                        width: 100%;
+                                        border-collapse: collapse;
+                                    }
+                                    th, td {
+                                        border: 1px solid #ddd;
+                                        padding: 8px;
+                                        text-align: center;
+                                    }
+                                    th {
+                                        background-color: #007bff;
+                                        color: #fff;
+                                        font-weight: bold;
+                                    }
+                                </style>
+                            </head>
+                            <body onload="window.print(); window.close();">
+                                ${invoiceHtml}
+                            </body>
+                        </html>
+                    `);
+                    printWindow.document.close();
+                },
+                error: function () {
+                    alert('Không thể lấy danh sách sản phẩm.');
+                }
+            });
+        },
+        error: function () {
+            alert('Không thể lấy thông tin hóa đơn.');
+        }
+    });
+});
